@@ -410,11 +410,16 @@ var ShadowCSS = {
     return cssText.replace(cssColonHostRe, function(m, p1, p2, p3) {
       p1 = polyfillHostNoCombinator;
       if (p2) {
-        if (p2.match(polyfillHost)) {
-          return p1 + p2.replace(polyfillHost, '') + p3;
-        } else {
-          return p1 + p2 + p3 + ', ' + p2 + ' ' + p1 + p3;
+        var parts = p2.split(','), r = [];
+        for (var i=0, l=parts.length, p; (i<l) && (p=parts[i]); i++) {
+          p = p.trim();
+          if (p.match(polyfillHost)) {
+            r.push(p1 + p.replace(polyfillHost, '') + p3);
+          } else {
+            r.push(p1 + p + p3 + ', ' + p + ' ' + p1 + p3);
+          }
         }
+        return r.join(',');
       } else {
         return p1 + p3;
       }

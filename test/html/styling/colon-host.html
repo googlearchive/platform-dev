@@ -100,7 +100,7 @@ license that can be found in the LICENSE file.
         padding: 20px;
       }
 
-      :host(.foo:host) {
+      :host(.foo:host, .bar) {
         background: green;
         display: block;
       }
@@ -149,6 +149,11 @@ license that can be found in the LICENSE file.
 
   <h4>Expected: 20px padding, background green</h4>
   <x-zim2 class="foo"></x-zim2>
+
+  <h4>Expected: 20px padding, background green</h4>
+  <div class="bar">
+    <x-zim2></x-zim2>
+  </div>
   <h4>Expected: 20px padding</h4>
   <div class="foo">
     <x-zim2></x-zim2>
@@ -228,10 +233,15 @@ license that can be found in the LICENSE file.
       chai.assert.equal(zimStyle2.backgroundColor, 'rgb(0, 128, 0)', 
         ':host(.foo:host) styles are applied (backgroundColor)');
 
-      var zim2_2 = document.querySelector('.foo x-zim2');
+      var zim2_2 = document.querySelector('.bar > x-zim2');
       var zimStyle2_2 = getComputedStyle(zim2_2);
-      chai.assert.equal(zimStyle2.backgroundColor, 'rgb(0, 128, 0)', 
+      chai.assert.equal(zimStyle2_2.backgroundColor, 'rgb(0, 128, 0)', 
         ':host(.foo:host) styles are applied (backgroundColor)');
+
+      var zim2_3 = document.querySelector('.foo > x-zim2');
+      var zimStyle2_3 = getComputedStyle(zim2_3);
+      chai.assert.notEqual(zimStyle2_3.backgroundColor, 'rgb(0, 128, 0)', 
+        ':host(.foo:host) styles are not applied when host doesn\'t contain .foo (backgroundColor)');
 
       var btn = document.querySelector('[is=x-button]');
       var btnStyle = getComputedStyle(btn);
