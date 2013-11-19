@@ -24,12 +24,13 @@ htmlSuite('styling', function() {
   htmlTest('html/styling/host.html?shadow&register');
   htmlTest('html/styling/pseudo-scoping.html');
   htmlTest('html/styling/pseudo-scoping.html?shadow&register');
+  htmlTest('html/styling/pseudo-scoping-strict.html');
+  htmlTest('html/styling/pseudo-scoping-strict.html?shadow&register');
   htmlTest('html/styling/pseudos.html');
   htmlTest('html/styling/pseudos.html?shadow&register');
   htmlTest('html/styling/polyfill-directive.html');
   htmlTest('html/styling/polyfill-rule.html');
-  // TODO(sorvell): blocked on https://code.google.com/p/chromium/issues/detail?id=313935
-  //htmlTest('html/styling/colon-host.html');
+  htmlTest('html/styling/colon-host.html');
   htmlTest('html/styling/colon-host.html?shadow&register');
   htmlTest('html/styling/combinators.html');
   htmlTest('html/styling/combinators.html?shadow&register');
