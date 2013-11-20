@@ -17,7 +17,8 @@
     "HTMLImports": "Polymer/HTMLImports#master",
     "PointerGestures":"Polymer/PointerGestures#master",
     "ShadowDOM": "Polymer/ShadowDOM#master",
-    "polymer-expressions": "Polymer/polymer-expressions#master"
+    "polymer-expressions": "Polymer/polymer-expressions#master",
+    "tools": "Polymer/tools#master"
   },
   "license": "BSD",
   "private": true,

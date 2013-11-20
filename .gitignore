@@ -3,7 +3,7 @@
 
 /test.bat
 
-/build/shadowdom.conditional.js
+/build/platform*
 *.min.js*
 *.concat.js*
 build.bat

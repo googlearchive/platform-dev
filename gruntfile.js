@@ -26,14 +26,14 @@ module.exports = function(grunt) {
           nonull: true
         },
         files: {
-          'platform.concat.js': readManifest('build.json')
+          'build/platform.concat.js': readManifest('build.json')
         }
       }
     },
     concat: {
       lite: {
         files: {
-          'platform-lite.concat.js': readManifest('build-lite.json')
+          'build/platform-lite.concat.js': readManifest('build-lite.json')
         }
       }
     },
@@ -46,12 +46,13 @@ module.exports = function(grunt) {
       },
       Platform: {
         options: {
-          sourceMap: 'platform.min.js.map',
-          sourceMapIn: 'platform.concat.js.map',
+          sourceMap: 'build/platform.js.map',
+          sourceMapIn: 'build/platform.concat.js.map',
+          sourceMappingURL: "platform.js.map",
           banner: grunt.file.read('LICENSE')
         },
         files: {
-          'platform.min.js': 'platform.concat.js'
+          'build/platform.js': 'build/platform.concat.js'
         }
       }
     },
@@ -86,17 +87,17 @@ module.exports = function(grunt) {
   grunt.registerTask('stash', 'prepare for testing build', function() {
     grunt.option('force', true);
     grunt.task.run('move:platform.js:platform.js.bak');
-    grunt.task.run('move:platform.min.js:platform.js');
+    grunt.task.run('move:build/platform.js:platform.js');
   });
   grunt.registerTask('restore', function() {
-    grunt.task.run('move:platform.js:platform.min.js');
+    grunt.task.run('move:platform.js:build/platform.js');
     grunt.task.run('move:platform.js.bak:platform.js');
     grunt.option('force', false);
   });
 
   grunt.registerTask('test-build', ['default', 'stash', 'test', 'restore']);
 
-  grunt.registerTask('default', ['concat_sourcemap', 'uglify', 'sourcemap_copy:platform.concat.js.map:platform.min.js.map']);
+  grunt.registerTask('default', ['concat_sourcemap', 'uglify', 'sourcemap_copy:build/platform.concat.js.map:build/platform.js.map']);
   grunt.registerTask('docs', ['yuidoc']);
   grunt.registerTask('test', ['override-chrome-launcher', 'karma:platform']);
   grunt.registerTask('test-buildbot', ['override-chrome-launcher', 'karma:buildbot', 'test-build']);
