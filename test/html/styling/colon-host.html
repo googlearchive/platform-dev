@@ -28,6 +28,10 @@ license that can be found in the LICENSE file.
         background: black;
         color: white;
       }
+
+      :host(.opened:not(.animating)) div {
+        background: blue;
+      }
     </style>
     <div>background</div>
   </template>
@@ -162,6 +166,11 @@ license that can be found in the LICENSE file.
   <h4>Expected: blue background</h4>
      <a href="#" is="x-anchor">Test Link</a>
   </div>
+  <h4>Expected: blue background</h4>
+     <div class="opened">
+       <x-foo class="foo3"></x-foo>
+     </div>
+  </div>
   
   <script>
     document.addEventListener('WebComponentsReady', function() {
@@ -172,6 +181,11 @@ license that can be found in the LICENSE file.
       var foo2 = document.querySelector('x-foo.foo');
       chai.assert.equal(getComputedStyle(foo2).backgroundColor, 'rgb(0, 0, 0)',
         ':host styles are conditionally applied (backgroundColor)');  
+
+      var foo3 = document.querySelector('x-foo.foo3');
+      var foo3div = foo3.querySelector('div');
+      chai.assert.equal(getComputedStyle(foo3div).backgroundColor, 'rgb(0, 0, 255)',
+        ':host(:not()) styles are applied (backgroundColor)');  
 
       var scope = document.querySelector('x-scope');
       chai.assert.equal(getComputedStyle(scope).backgroundColor, 'rgb(255, 0, 0)',

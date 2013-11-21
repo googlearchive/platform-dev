@@ -521,7 +521,9 @@ var hostRuleRe = /@host[^{]*{(([^}]*?{[^{]*?}[\s\S]*?)+)}/gim,
     // note: :host pre-processed to -shadowcsshost.
     polyfillHost = '-shadowcsshost',
     cssColonHostRe = new RegExp('(' + polyfillHost +
-        ')(?:\\(([^)]*)\\))?([^,{]*)', 'gim'),
+        ')(?:\\((' +
+        '(?:\\([^)(]*\\)|[^)(]*)+?' +
+        ')\\))?([^,{]*)', 'gim'),
     selectorReSuffix = '([>\\s~+\[.,{:][\\s\\S]*)?$',
     hostRe = /@host/gim,
     colonHostRe = /\:host/gim,
