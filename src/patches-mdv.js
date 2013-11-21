@@ -35,6 +35,24 @@ window.addEventListener('WebComponentsReady', function() {
   }
 });
 
+
+if (window.CustomElements && !CustomElements.useNative) {
+  var originalImportNode = Document.prototype.importNode;
+  Document.prototype.importNode = function(node, deep) {
+    // TODO(sorvell): remove these conditionals when polyfill supports importNode
+    // https://github.com/Polymer/ShadowDOM/issues/317
+    if (window.ShadowDOMPolyfill) {
+      node = ShadowDOMPolyfill.unwrap(node);
+    } 
+    var imported = originalImportNode.call(this, node, deep);
+    CustomElements.upgradeAll(imported);
+    if (window.ShadowDOMPolyfill) {
+      imported = ShadowDOMPolyfill.wrap(imported);
+    } 
+    return imported;
+  }
+}
+
 // exports
 scope.flush = flush;
 
