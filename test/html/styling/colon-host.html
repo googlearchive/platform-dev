@@ -183,7 +183,7 @@ license that can be found in the LICENSE file.
         ':host styles are conditionally applied (backgroundColor)');  
 
       var foo3 = document.querySelector('x-foo.foo3');
-      var foo3div = foo3.querySelector('div');
+      var foo3div = foo3.shadowRoot.querySelector('div');
       chai.assert.equal(getComputedStyle(foo3div).backgroundColor, 'rgb(0, 0, 255)',
         ':host(:not()) styles are applied (backgroundColor)');  
 
