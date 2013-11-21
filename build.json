@@ -13,12 +13,12 @@
   "src/template.js",
   "src/inspector.js",
   "src/unresolved.js",
-  "../polymer-expressions/build.json",
-  "src/patches-mdv.js",
   "../HTMLImports/build.json",
   "../CustomElements/build.json",
   "src/patches-custom-elements.js",
   "src/microtask.js",
   "../PointerEvents/build.json",
-  "../PointerGestures/build.json"
+  "../PointerGestures/build.json",
+  "../polymer-expressions/build.json",
+  "src/patches-mdv.js"
 ]
