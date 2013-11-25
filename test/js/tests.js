@@ -26,8 +26,6 @@ htmlSuite('styling', function() {
   htmlTest('html/styling/pseudo-scoping.html?shadow&register');
   htmlTest('html/styling/pseudo-scoping-strict.html');
   htmlTest('html/styling/pseudo-scoping-strict.html?shadow&register');
-  htmlTest('html/styling/pseudos.html');
-  htmlTest('html/styling/pseudos.html?shadow&register');
   htmlTest('html/styling/polyfill-directive.html');
   htmlTest('html/styling/polyfill-rule.html');
   htmlTest('html/styling/colon-host.html');
