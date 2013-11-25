@@ -12,6 +12,13 @@ license that can be found in the LICENSE file.
   <script src="register.js"></script>
   <script src="../../../../tools/test/htmltest.js"></script>
   <script src="../../../../tools/test/chai/chai.js"></script>
+  <style>
+    x-foo ^ .foo {
+      background: orange;
+    }
+  </style>
+  <link rel="stylesheet" href="combinators.css">
+  <link rel="import" href="combinators-import.html">
 </head>
 <body>
 
@@ -29,6 +36,8 @@ license that can be found in the LICENSE file.
         color: white;
       }
     </style>
+    <div class="foo">orange</div>
+    <div class="foo2">green</div>
     <x-bar></x-bar>
   </template>
   <template id="x-bar">
@@ -44,6 +53,7 @@ license that can be found in the LICENSE file.
 
   <template id="x-zot">
     <div class="zot">Zot</div>
+    <div class="zot-inner">inner</div>
   </template>
 
   
@@ -66,17 +76,27 @@ license that can be found in the LICENSE file.
       var noogy = xBarRoot.querySelector('.noogy');
       chai.assert.equal(getComputedStyle(noogy).backgroundColor, 'rgb(0, 0, 255)',
         '^ styles are applied (backgroundColor)');
-
-      var zot = foo.shadowRoot.querySelector('x-bar').shadowRoot
-          .querySelector('x-zot').shadowRoot.querySelector('.zot');
+      var xZot = foo.shadowRoot.querySelector('x-bar').shadowRoot
+          .querySelector('x-zot'); 
+      var zot = xZot.shadowRoot.querySelector('.zot');
       
       chai.assert.equal(getComputedStyle(zot).backgroundColor, 'rgb(0, 128, 0)',
         '^ styles are applied (backgroundColor)');
       chai.assert.equal(getComputedStyle(zot).color, 'rgb(255, 255, 255)',
         '^^ styles are applied (color)');
+
+      var fooDiv = foo.shadowRoot.querySelector('.foo');
+      chai.assert.equal(getComputedStyle(fooDiv).backgroundColor, 'rgb(255, 165, 0)',
+        'combinators applied via style in main document');
+      if (window.ShadowDOMPolyfill) {
+        var fooDiv2 = foo.shadowRoot.querySelector('.foo2');
+        chai.assert.equal(getComputedStyle(fooDiv2).backgroundColor, 'rgb(0, 128, 0)',
+          'combinators applied via stylesheet in import');
+      }
+      var zotDiv = xZot.shadowRoot.querySelector('.zot-inner');
+      chai.assert.equal(getComputedStyle(zotDiv).backgroundColor, 'rgb(0, 0, 255)',
+        'combinators applied via stylesheet in main document');
       done();
-
-
     });
   </script>
 </body>

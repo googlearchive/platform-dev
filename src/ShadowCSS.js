@@ -165,14 +165,8 @@ var ShadowCSS = {
     if (this.strictStyling) {
       this.applyScopeToContent(root, name);
     }
-    // insert @polyfill and @polyfill-rule rules into style elements
-    // scoping process takes care of shimming these
-    this.insertPolyfillDirectives(def.rootStyles);
-    this.insertPolyfillRules(def.rootStyles);
-    var cssText = this.stylesToShimmedCssText(def.scopeStyles, name,
-        typeExtension);
-    // note: we only need to do rootStyles since these are unscoped.
-    cssText += this.extractPolyfillUnscopedRules(def.rootStyles);
+    var cssText = this.stylesToShimmedCssText(def.rootStyles, def.scopeStyles,
+        name, typeExtension);
     // provide shimmedStyle for user extensibility
     def.shimmedStyle = cssTextToStyle(cssText);
     if (root) {
@@ -185,6 +179,20 @@ var ShadowCSS = {
     }
     // add style to document
     addCssToDocument(cssText);
+  },
+  // apply @polyfill rules + @host and scope shimming
+  stylesToShimmedCssText: function(rootStyles, scopeStyles, name,
+      typeExtension) {
+    name = name || '';
+    // insert @polyfill and @polyfill-rule rules into style elements
+    // scoping process takes care of shimming these
+    this.insertPolyfillDirectives(rootStyles);
+    this.insertPolyfillRules(rootStyles);
+    var cssText = this.shimAtHost(scopeStyles, name, typeExtension) +
+        this.shimScoping(scopeStyles, name, typeExtension);
+    // note: we only need to do rootStyles since these are unscoped.
+    cssText += this.extractPolyfillUnscopedRules(rootStyles);
+    return cssText;
   },
   registerDefinition: function(root, name, extendsName) {
     var def = this.registry[name] = {
@@ -304,11 +312,6 @@ var ShadowCSS = {
     }
     return r;
   },
-  // apply @host and scope shimming
-  stylesToShimmedCssText: function(styles, name, typeExtension) {
-    return this.shimAtHost(styles, name, typeExtension) +
-        this.shimScoping(styles, name, typeExtension);
-  },
   // form: @host { .foo { declarations } }
   // becomes: scopeName.foo { declarations }
   shimAtHost: function(styles, name, typeExtension) {
@@ -381,7 +384,9 @@ var ShadowCSS = {
     cssText = this.convertParts(cssText);
     cssText = this.convertCombinators(cssText);
     var rules = cssToRules(cssText);
-    cssText = this.scopeRules(rules, name, typeExtension);
+    if (name) {
+      cssText = this.scopeRules(rules, name, typeExtension);
+    }
     return cssText;
   },
   convertPseudos: function(cssText) {
@@ -575,6 +580,7 @@ function getSheet() {
   if (!sheet) {
     sheet = document.createElement("style");
     sheet.setAttribute('ShadowCSSShim', '');
+    sheet.shadowCssShim = true;
   }
   return sheet;
 }
@@ -584,6 +590,36 @@ if (window.ShadowDOMPolyfill) {
   addCssToDocument('style { display: none !important; }\n');
   var head = document.querySelector('head');
   head.insertBefore(getSheet(), head.childNodes[0]);
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.HTMLImports) {
+      HTMLImports.importer.preloadSelectors += 
+          ', link[rel=stylesheet]:not([nopolyfill])';
+      HTMLImports.parser.parseGeneric = function(elt) {
+        if (elt.shadowCssShim) {
+          return;
+        }
+        var style = elt;
+        if (!elt.hasAttribute('nopolyfill')) {
+          if (elt.__resource) {
+            style = document.createElement('style');
+            style.textContent = elt.__resource;
+            // remove links from main document
+            if (elt.ownerDocument === document) {
+              elt.parentNode.removeChild(elt);
+            }
+          }
+          var styles = [style];
+          style.textContent = ShadowCSS.stylesToShimmedCssText(styles, styles);
+          style.shadowCssShim = true;
+        }
+        // place in document
+        if (style.parentNode !== document.head) {
+          document.head.appendChild(style);
+        }
+      }
+    }
+  });
 }
 
 // exports
