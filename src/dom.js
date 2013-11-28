@@ -118,11 +118,16 @@
     return dom;
   }
 
-  window.Polymer = function(name, dictionary) {
+  var polymer = function(name, dictionary) {
     window.addEventListener('WebComponentsReady', function() {
-      Polymer(name, dictionary);
+      // avoid re-entrancy. If polymer is not redefined by this time, do nothing
+      if (window.Polymer !== polymer) {
+        Polymer(name, dictionary);
+      }
     });
   }
+
+  window.Polymer = polymer
   // exports
 
   scope.createDOM = createDOM;
