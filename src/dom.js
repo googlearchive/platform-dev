@@ -123,6 +123,10 @@
       // avoid re-entrancy. If polymer is not redefined by this time, do nothing
       if (window.Polymer !== polymer) {
         Polymer(name, dictionary);
+      } else {
+        console.warn('You tried to use polymer without loading it first. To ' +
+            'load polymer, <link rel="import" href="' + 
+            'components/polymer/plymer.html">');
       }
     });
   }
