@@ -4,7 +4,7 @@
  * license that can be found in the LICENSE file.
  */
 (function() {
-  
+
   // poor man's adapter for template.content on various platform scenarios
   window.templateContent = window.templateContent || function(inTemplate) {
     return inTemplate.content;
@@ -15,9 +15,9 @@
   window.wrap = window.unwrap = function(n){
     return n;
   }
-  
-  var originalCreateShadowRoot = HTMLElement.prototype.webkitCreateShadowRoot;
-  HTMLElement.prototype.webkitCreateShadowRoot = function() {
+
+  var originalCreateShadowRoot = Element.prototype.webkitCreateShadowRoot;
+  Element.prototype.webkitCreateShadowRoot = function() {
     var elderRoot = this.webkitShadowRoot;
     var root = originalCreateShadowRoot.call(this);
     root.olderShadowRoot = elderRoot;
@@ -26,7 +26,7 @@
     return root;
   }
 
-  Object.defineProperties(HTMLElement.prototype, {
+  Object.defineProperties(Element.prototype, {
     shadowRoot: {
       get: function() {
         return this.webkitShadowRoot;
