@@ -6,19 +6,9 @@
 (function() {
 
   // convenient global
-  window.wrap = function(n) {
-    return n.impl ? n : ShadowDOMPolyfill.wrap(n);
-  }
-  window.unwrap = function(n){
-    return n.impl ? ShadowDOMPolyfill.unwrap(n) : n;
-  }
+  window.wrap = ShadowDOMPolyfill.wrapIfNeeded;
+  window.unwrap = ShadowDOMPolyfill.unwrapIfNeeded;
 
-  // getComputedStyle patch to tolerate unwrapped input
-  var originalGetComputedStyle = window.getComputedStyle;
-  window.getComputedStyle = function(n, pseudo) {
-    return originalGetComputedStyle.call(window, wrap(n), pseudo);
-  };
-  
   // users may want to customize other types
   // TODO(sjmiles): 'button' is now supported by ShadowDOMPolyfill, but
   // I've left this code here in case we need to temporarily patch another
@@ -33,26 +23,17 @@
     }
   })();
   */
- 
+
   // patch in prefixed name
-  Object.defineProperties(HTMLElement.prototype, {
-    //TODO(sjmiles): review accessor alias with Arv
-    webkitShadowRoot: {
-      get: function() {
-        return this.shadowRoot;
-      }
-    }
-  });
-  
-  // include .host reference
-  var originalCreateShadowRoot = HTMLElement.prototype.createShadowRoot;
-  HTMLElement.prototype.createShadowRoot = function() {
+  Object.defineProperty(Element.prototype, 'webkitShadowRoot',
+      Object.getOwnPropertyDescriptor(Element.prototype, 'shadowRoot'));
+
+  var originalCreateShadowRoot = Element.prototype.createShadowRoot;
+  Element.prototype.createShadowRoot = function() {
     var root = originalCreateShadowRoot.call(this);
     CustomElements.watchShadow(this);
     return root;
-  }
+  };
 
-  //TODO(sjmiles): review method alias with Arv
-  HTMLElement.prototype.webkitCreateShadowRoot =
-      HTMLElement.prototype.createShadowRoot;    
+  Element.prototype.webkitCreateShadowRoot = Element.prototype.createShadowRoot;
 })();
