@@ -20,8 +20,6 @@ htmlSuite('integration', function() {
 });
 
 htmlSuite('styling', function() {
-  htmlTest('html/styling/host.html');
-  htmlTest('html/styling/host.html?shadow&register');
   htmlTest('html/styling/pseudo-scoping.html');
   htmlTest('html/styling/pseudo-scoping.html?shadow&register');
   htmlTest('html/styling/pseudo-scoping-strict.html');
