@@ -1,7 +1,6 @@
 {
   "name": "platform-dev",
   "main": "platform.js",
-  "version": "0.0.20131107",
   "homepage": "https://github.com/Polymer/platform",
   "authors": [
     "The Polymer Authors"
