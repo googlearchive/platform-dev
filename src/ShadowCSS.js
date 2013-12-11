@@ -588,7 +588,8 @@ function getSheet() {
 // add polyfill stylesheet to document
 if (window.ShadowDOMPolyfill) {
   addCssToDocument('style { display: none !important; }\n');
-  var head = document.querySelector('head');
+  var doc = wrap(document);
+  var head = doc.querySelector('head');
   head.insertBefore(getSheet(), head.childNodes[0]);
 
   document.addEventListener('DOMContentLoaded', function() {
@@ -602,10 +603,10 @@ if (window.ShadowDOMPolyfill) {
         var style = elt;
         if (!elt.hasAttribute('nopolyfill')) {
           if (elt.__resource) {
-            style = document.createElement('style');
+            style = doc.createElement('style');
             style.textContent = elt.__resource;
             // remove links from main document
-            if (elt.ownerDocument === document) {
+            if (elt.ownerDocument === doc) {
               elt.parentNode.removeChild(elt);
             }
           }
@@ -614,8 +615,8 @@ if (window.ShadowDOMPolyfill) {
           style.shadowCssShim = true;
         }
         // place in document
-        if (style.parentNode !== document.head) {
-          document.head.appendChild(style);
+        if (style.parentNode !== head) {
+          head.appendChild(style);
         }
       }
     }
