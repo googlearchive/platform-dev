@@ -56,7 +56,28 @@ module.exports = function(grunt) {
         }
       }
     },
-
+    audit: {
+      platform: {
+        options: {
+          repos: [
+            '../CustomElements',
+            '../HTMLImports',
+            '../NodeBind',
+            '../PointerEvents',
+            '../PointerGestures',
+            '../ShadowDOM',
+            '../TemplateBinding',
+            '../WeakMap',
+            '../observe-js',
+            '../platform',
+            '../polymer-expressions'
+          ]
+        },
+        files: {
+          'build/build.log': 'build/platform.js'
+        }
+      }
+    },
     yuidoc: {
       compile: {
         name: '<%= pkg.name %>',
@@ -83,6 +104,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-yuidoc');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-concat-sourcemap');
+  grunt.loadNpmTasks('grunt-audit');
 
   grunt.registerTask('stash', 'prepare for testing build', function() {
     grunt.option('force', true);
@@ -97,7 +119,8 @@ module.exports = function(grunt) {
 
   grunt.registerTask('test-build', ['default', 'stash', 'test', 'restore']);
 
-  grunt.registerTask('default', ['concat_sourcemap', 'uglify', 'sourcemap_copy:build/platform.concat.js.map:build/platform.js.map']);
+  grunt.registerTask('minify', ['concat_sourcemap', 'uglify', 'sourcemap_copy:build/platform.concat.js.map:build/platform.js.map']);
+  grunt.registerTask('default', ['minify', 'audit']);
   grunt.registerTask('docs', ['yuidoc']);
   grunt.registerTask('test', ['override-chrome-launcher', 'karma:platform']);
   grunt.registerTask('test-buildbot', ['override-chrome-launcher', 'karma:buildbot', 'test-build']);
