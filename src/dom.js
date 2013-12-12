@@ -119,7 +119,7 @@
   }
 
   var polymer = function(name, dictionary) {
-    window.addEventListener('WebComponentsReady', function() {
+    document.addEventListener('WebComponentsReady', function() {
       // avoid re-entrancy. If polymer is not redefined by this time, do nothing
       if (window.Polymer !== polymer) {
         Polymer(name, dictionary);
@@ -128,7 +128,7 @@
             'load polymer, <link rel="import" href="' + 
             'components/polymer/plymer.html">');
       }
-    });
+    }, true);
   }
 
   window.Polymer = polymer
