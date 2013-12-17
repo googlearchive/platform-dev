@@ -126,7 +126,7 @@
       } else {
         console.warn('You tried to use polymer without loading it first. To ' +
             'load polymer, <link rel="import" href="' + 
-            'components/polymer/plymer.html">');
+            'components/polymer/polymer.html">');
       }
     }, true);
   }
