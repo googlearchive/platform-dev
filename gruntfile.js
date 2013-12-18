@@ -49,7 +49,7 @@ module.exports = function(grunt) {
           sourceMap: 'build/platform.js.map',
           sourceMapIn: 'build/platform.concat.js.map',
           sourceMappingURL: "platform.js.map",
-          banner: grunt.file.read('LICENSE')
+          banner: grunt.file.read('LICENSE') + '// @version: <%= buildversion %>'
         },
         files: {
           'build/platform.js': 'build/platform.concat.js'
@@ -119,7 +119,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('test-build', ['default', 'stash', 'test', 'restore']);
 
-  grunt.registerTask('minify', ['concat_sourcemap', 'uglify', 'sourcemap_copy:build/platform.concat.js.map:build/platform.js.map']);
+  grunt.registerTask('minify', ['concat_sourcemap', 'version', 'uglify', 'sourcemap_copy:build/platform.concat.js.map:build/platform.js.map']);
   grunt.registerTask('default', ['minify', 'audit']);
   grunt.registerTask('docs', ['yuidoc']);
   grunt.registerTask('test', ['override-chrome-launcher', 'karma:platform']);
