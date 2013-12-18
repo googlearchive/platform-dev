@@ -117,23 +117,39 @@
     }
     return dom;
   }
+  // Make a stub for Polymer() for polyfill purposes; under the HTMLImports
+  // polyfill, scripts in the main document run before imports. That means
+  // if (1) polymer is imported and (2) Polymer() is called in the main document
+  // in a script after the import, 2 occurs before 1. We correct this here
+  // by specfiically patching Polymer(); this is not necessary under native
+  // HTMLImports.
+  var elementDeclarations = [];
 
-  var polymer = function(name, dictionary) {
-    document.addEventListener('WebComponentsReady', function() {
-      // avoid re-entrancy. If polymer is not redefined by this time, do nothing
-      if (window.Polymer !== polymer) {
-        Polymer(name, dictionary);
-      } else {
-        console.warn('You tried to use polymer without loading it first. To ' +
-            'load polymer, <link rel="import" href="' + 
-            'components/polymer/polymer.html">');
-      }
-    }, true);
+  var polymerStub = function(name, dictionary) {
+    elementDeclarations.push(arguments);
+  }
+  window.Polymer = polymerStub;
+
+  // deliver queued delcarations
+  scope.deliverDeclarations = function() {
+    scope.deliverDeclarations = null;
+    return elementDeclarations;
   }
 
-  window.Polymer = polymer
-  // exports
+  // Once DOMContent has loaded, any main document scripts that depend on
+  // Polymer() should have run. Calling Polymer() now is an error until
+  // polymer is imported.
+  window.addEventListener('DOMContentLoaded', function() {
+    if (window.Polymer === polymerStub) {
+      window.Polymer = function() {
+        console.error('You tried to use polymer without loading it first. To ' +
+          'load polymer, <link rel="import" href="' + 
+          'components/polymer/polymer.html">');
+      };
+    }
+  });
 
+  // exports
   scope.createDOM = createDOM;
 
 })(window.Platform);
