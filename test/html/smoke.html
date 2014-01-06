@@ -22,13 +22,13 @@ license that can be found in the LICENSE file.
         p.createdCallback = function() {
           this.textContent = 'custom!';
         }
-        document.register('x-foo', {prototype: p});
+        document.registerElement('x-foo', {prototype: p});
         //
         var p = Object.create(HTMLButtonElement.prototype);
         p.createdCallback = function() {
           this.textContent = 'custom!';
         }
-        document.register('x-baz', {prototype: p, extends: 'button'});
+        document.registerElement('x-baz', {prototype: p, extends: 'button'});
         document.body.appendChild(document.createElement('button', 'x-baz')).id = 'baz2';
         //
         assert.equal(document.querySelector('x-foo').textContent, 'custom!',
@@ -40,11 +40,11 @@ license that can be found in the LICENSE file.
           'button is=x-baz can be created via document.createElement(button, x-baz)');
         //
         var p = Object.create(HTMLElement.prototype);
-        p.enteredViewCallback = function() {
+        p.attachedCallback = function() {
           this.textContent = 'custom!';
         }
         //
-        document.register('x-zot', {prototype: p});
+        document.registerElement('x-zot', {prototype: p});
         //
         var xfoo = document.querySelector('x-foo');
         var root = xfoo.createShadowRoot();

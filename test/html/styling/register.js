@@ -28,7 +28,7 @@
     if (typeExtension) {
       config.extends = extnds;
     }
-    var ctor = document.register(name, config);
+    var ctor = document.registerElement(name, config);
     return ctor;
   }
 

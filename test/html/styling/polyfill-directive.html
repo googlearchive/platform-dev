@@ -23,20 +23,18 @@ license that can be found in the LICENSE file.
  
   <template id="x-foo">
     <style>
-      @host {
-        * {
-          display: block;
-          border: 1px solid black;
-        }
+      :host {
+        display: block;
+        border: 1px solid black;
       }
 
       /*@polyfill :host > div */
-      ::-webkit-distributed(*) {
+      ::content > * {
         background: green;
       }
 
       /*@polyfill :host > div */
-      ::-webkit-distributed(*) {
+      ::content > * {
         color: red;
       }
 
