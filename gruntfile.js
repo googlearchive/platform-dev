@@ -120,7 +120,7 @@ module.exports = function(grunt) {
   grunt.registerTask('test-build', ['default', 'stash', 'test', 'restore']);
 
   grunt.registerTask('minify', ['concat_sourcemap', 'version', 'uglify', 'sourcemap_copy:build/platform.concat.js.map:build/platform.js.map']);
-  grunt.registerTask('default', ['minify', 'audit']);
+  grunt.registerTask('default', ['minify']);
   grunt.registerTask('docs', ['yuidoc']);
   grunt.registerTask('test', ['override-chrome-launcher', 'karma:platform']);
   grunt.registerTask('test-buildbot', ['override-chrome-launcher', 'karma:buildbot', 'test-build']);
