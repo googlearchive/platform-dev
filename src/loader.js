@@ -17,15 +17,18 @@ var loader = {
       } else {
         this.platformLoadStyles(styles, callback);
       }
-      return true;
+    } else if (callback) {
+      callback();
     }
   },
   findLoadableStyles: function(root) {
     var loadables = [];
-    var s$ = root.querySelectorAll(STYLE_SELECTOR);
-    for (var i=0, l=s$.length, s; (i<l) && (s=s$[i]); i++) {
-      if (s.textContent.match(STYLE_LOADABLE_MATCH)) {
-        loadables.push(s);
+    if (root) {
+      var s$ = root.querySelectorAll(STYLE_SELECTOR);
+      for (var i=0, l=s$.length, s; (i<l) && (s=s$[i]); i++) {
+        if (s.textContent.match(STYLE_LOADABLE_MATCH)) {
+          loadables.push(s);
+        }
       }
     }
     return loadables;
