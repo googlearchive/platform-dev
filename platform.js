@@ -60,7 +60,8 @@ function processFlags(flags) {
       '../HTMLImports/html-imports.js',
       '../CustomElements/custom-elements.js',
       'src/patches-custom-elements.js',
-      'src/microtask.js'
+      'src/microtask.js',
+      'src/loader.js'
     ];
 
     // select ShadowDOM impl

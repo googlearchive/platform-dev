@@ -593,7 +593,7 @@ if (window.ShadowDOMPolyfill) {
   head.insertBefore(getSheet(), head.childNodes[0]);
 
   document.addEventListener('DOMContentLoaded', function() {
-    if (window.HTMLImports) {
+    if (window.HTMLImports && !HTMLImports.useNative) {
       HTMLImports.importer.preloadSelectors += 
           ', link[rel=stylesheet]:not([nopolyfill])';
       HTMLImports.parser.parseGeneric = function(elt) {
