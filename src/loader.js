@@ -79,6 +79,35 @@ function createStyleElement(cssText, scope) {
   return style;
 }
 
+// TODO(sorvell): integrate a real URL polyfill, this is cribbed from
+// https://github.com/arv/DOM-URL-Polyfill/blob/master/src/url.js.
+// NOTE: URL seems difficult to polyfill since chrome and safari implement
+// it but only chrome's appears to work.
+function getUrl(base, url) {
+  url = url || ''
+  var doc = document.implementation.createHTMLDocument('');
+  if (base) {
+    var baseElement = doc.createElement('base');
+    baseElement.href = base;
+    doc.head.appendChild(baseElement);
+  }
+  var anchorElement = doc.createElement('a');
+  anchorElement.href = url;
+  doc.body.appendChild(anchorElement);
+  return anchorElement;
+}
+
+// TODO(sorvell): factor path fixup for easier reuse; parts are currently
+// needed by HTMLImports and ShadowDOM style shimming.
+function resolveUrlsInCssText(cssText, url) {
+  return HTMLImports.path.resolveUrlsInCssText(cssText,
+      getUrl(url));
+}
+
+function resolveUrlsInStyle(style) {
+  return HTMLImports.path.resolveUrlsInStyle(style);
+}
+
 // TODO(sorvell): use a common loader shared with HTMLImports polyfill
 // currently, this just loads the first @import per style element 
 // and does not recurse into loaded elements; we'll address this with a 
@@ -88,6 +117,7 @@ function polyfillLoadStyle(style, callback) {
   HTMLImports.xhr.load(atImportUrlFromStyle(style), function (err, resource,
       url) {
     replaceAtImportWithCssText(this, url, resource);
+    this.textContent = resolveUrlsInCssText(this.textContent, url);
     callback && callback(this);
   }, style);
 }
@@ -105,6 +135,9 @@ function replaceAtImportWithCssText(style, url, cssText) {
   style.textContent = style.textContent.replace(re, cssText);
 }
 
+// exports
+loader.resolveUrlsInCssText = resolveUrlsInCssText;
+loader.resolveUrlsInStyle = resolveUrlsInStyle;
 scope.loader = loader;
 
 })(window.Platform);

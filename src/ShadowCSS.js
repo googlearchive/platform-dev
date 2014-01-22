@@ -148,6 +148,8 @@
 */
 (function(scope) {
 
+var loader = scope.loader;
+
 var ShadowCSS = {
   strictStyling: false,
   registry: {},
@@ -603,12 +605,15 @@ if (window.ShadowDOMPolyfill) {
         var style = elt;
         if (!elt.hasAttribute('nopolyfill')) {
           if (elt.__resource) {
-            style = doc.createElement('style');
-            style.textContent = elt.__resource;
+            style = elt.ownerDocument.createElement('style');
+            style.textContent = Platform.loader.resolveUrlsInCssText(
+                elt.__resource, elt.href);
             // remove links from main document
             if (elt.ownerDocument === doc) {
               elt.parentNode.removeChild(elt);
             }
+          } else {
+            Platform.loader.resolveUrlsInStyle(style);  
           }
           var styles = [style];
           style.textContent = ShadowCSS.stylesToShimmedCssText(styles, styles);
