@@ -84,7 +84,7 @@ function createStyleElement(cssText, scope) {
 // NOTE: URL seems difficult to polyfill since chrome and safari implement
 // it but only chrome's appears to work.
 function getUrl(base, url) {
-  url = url || ''
+  url = url || '';
   var doc = document.implementation.createHTMLDocument('');
   if (base) {
     var baseElement = doc.createElement('base');
