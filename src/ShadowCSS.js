@@ -382,7 +382,10 @@ var ShadowCSS = {
     var cssText = stylesToCssText(styles).replace(hostRuleRe, '');
     cssText = this.insertPolyfillHostInCssText(cssText);
     cssText = this.convertColonHost(cssText);
+    cssText = this.convertColonAncestor(cssText);
+    // TODO(sorvell): deprecated, remove
     cssText = this.convertPseudos(cssText);
+    // TODO(sorvell): deprecated, remove
     cssText = this.convertParts(cssText);
     cssText = this.convertCombinators(cssText);
     var rules = cssToRules(cssText);
@@ -402,35 +405,56 @@ var ShadowCSS = {
    *
    * to
    *
+   * scopeName.foo > .bar
+  */
+  convertColonHost: function(cssText) {
+    return this.convertColonRule(cssText, cssColonHostRe,
+        this.colonHostPartReplacer);
+  },
+  /*
+   * convert a rule like :ancestor(.foo) > .bar { }
+   *
+   * to
+   *
    * scopeName.foo > .bar, .foo scopeName > .bar { }
    * 
    * and
    *
-   * :host(.foo:host) .bar { ... }
+   * :ancestor(.foo:host) .bar { ... }
    * 
    * to
    * 
    * scopeName.foo .bar { ... }
   */
-  convertColonHost: function(cssText) {
+  convertColonAncestor: function(cssText) {
+    return this.convertColonRule(cssText, cssColonAncestorRe,
+        this.colonAncestorPartReplacer);
+  },
+  convertColonRule: function(cssText, regExp, partReplacer) {
     // p1 = :host, p2 = contents of (), p3 rest of rule
-    return cssText.replace(cssColonHostRe, function(m, p1, p2, p3) {
+    return cssText.replace(regExp, function(m, p1, p2, p3) {
       p1 = polyfillHostNoCombinator;
       if (p2) {
         var parts = p2.split(','), r = [];
         for (var i=0, l=parts.length, p; (i<l) && (p=parts[i]); i++) {
           p = p.trim();
-          if (p.match(polyfillHost)) {
-            r.push(p1 + p.replace(polyfillHost, '') + p3);
-          } else {
-            r.push(p1 + p + p3 + ', ' + p + ' ' + p1 + p3);
-          }
+          r.push(partReplacer(p1, p, p3));
         }
         return r.join(',');
       } else {
         return p1 + p3;
       }
     });
+  },
+  colonAncestorPartReplacer: function(host, part, suffix) {
+    if (part.match(polyfillHost)) {
+      return this.colonHostPartReplacer(host, part, suffix);
+    } else {
+      return host + part + suffix + ', ' + part + ' ' + host + suffix;
+    }
+  },
+  colonHostPartReplacer: function(host, part, suffix) {
+    return host + part.replace(polyfillHost, '') + suffix;
   },
   /*
    * Convert ^ and ^^ combinators by replacing with space.
@@ -508,7 +532,7 @@ var ShadowCSS = {
   },
   insertPolyfillHostInCssText: function(selector) {
     return selector.replace(hostRe, polyfillHost).replace(colonHostRe,
-        polyfillHost);
+        polyfillHost).replace(colonAncestorRe, polyfillAncestor);
   },
   propertiesFromRule: function(rule) {
     return rule.style.cssText;
@@ -527,16 +551,21 @@ var hostRuleRe = /@host[^{]*{(([^}]*?{[^{]*?}[\s\S]*?)+)}/gim,
     cssPartRe = /::part\(([^)]*)\)/gim,
     // note: :host pre-processed to -shadowcsshost.
     polyfillHost = '-shadowcsshost',
-    cssColonHostRe = new RegExp('(' + polyfillHost +
-        ')(?:\\((' +
+    // note: :ancestor pre-processed to -shadowcssancestor.
+    polyfillAncestor = '-shadowcssancestor',
+    parenSuffix = ')(?:\\((' +
         '(?:\\([^)(]*\\)|[^)(]*)+?' +
-        ')\\))?([^,{]*)', 'gim'),
+        ')\\))?([^,{]*)';
+    cssColonHostRe = new RegExp('(' + polyfillHost + parenSuffix, 'gim'),
+    cssColonAncestorRe = new RegExp('(' + polyfillAncestor + parenSuffix, 'gim'),
     selectorReSuffix = '([>\\s~+\[.,{:][\\s\\S]*)?$',
     hostRe = /@host/gim,
     colonHostRe = /\:host/gim,
+    colonAncestorRe = /\:ancestor/gim,
     /* host name without combinator */
     polyfillHostNoCombinator = polyfillHost + '-no-combinator',
     polyfillHostRe = new RegExp(polyfillHost, 'gim');
+    polyfillAncestorRe = new RegExp(polyfillAncestor, 'gim');
 
 function stylesToCssText(styles, preserveComments) {
   var cssText = '';
