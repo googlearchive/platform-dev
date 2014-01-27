@@ -6,41 +6,16 @@
 (function(scope) {
 
 var STYLE_SELECTOR = 'style';
-var STYLE_LOADABLE_MATCH = '@import';
 
 var loader = {
-  loadStyles: function(root, callback) {
-    var styles = this.findLoadableStyles(root);
-    if (styles.length) {
-      if (window.ShadowDOMPolyfill) {
-        this.polyfillLoadStyles(styles, callback);
-      } else {
-        this.platformLoadStyles(styles, callback);
-      }
-    } else if (callback) {
-      callback();
-    }
-  },
-  findLoadableStyles: function(root) {
-    var loadables = [];
-    if (root) {
-      var s$ = root.querySelectorAll(STYLE_SELECTOR);
-      for (var i=0, l=s$.length, s; (i<l) && (s=s$[i]); i++) {
-        if (s.textContent.match(STYLE_LOADABLE_MATCH)) {
-          loadables.push(s);
-        }
-      }
-    }
-    return loadables;
-  },
-  platformLoadStyles: function(styles, callback) {
+  cacheStyles: function(styles, callback) {
     var css = [];
     for (var i=0, l=styles.length, s; (i<l) && (s=styles[i]); i++) {
       css.push(s.textContent);
     }
-    loadCssText(css.join('\n'), callback);
+    cacheCssText(css.join('\n'), callback);
   },
-  polyfillLoadStyles: function(styles, callback) {
+  xhrStyles: function(styles, callback) {
     var loaded=0, l = styles.length;
     // called in the context of the style
     function loadedStyle(style) {
@@ -51,7 +26,7 @@ var loader = {
       }
     }
     for (var i=0, s; (i<l) && (s=styles[i]); i++) {
-      polyfillLoadStyle(s, loadedStyle);
+      xhrLoadStyle(s, loadedStyle);
     }
   }
 };
@@ -62,7 +37,7 @@ preloadElement.style.display = 'none';
 var preloadRoot = preloadElement.createShadowRoot();
 document.head.appendChild(preloadElement);
 
-function loadCssText(cssText, callback) {
+function cacheCssText(cssText, callback) {
   var style = createStyleElement(cssText);
   if (callback) {
     style.addEventListener('load', callback);
@@ -113,7 +88,7 @@ function resolveUrlsInStyle(style) {
 // and does not recurse into loaded elements; we'll address this with a 
 // generalized loader that's built out of the one in the HTMLImports polyfill.
 // polyfill the loading of a style element's @import via xhr
-function polyfillLoadStyle(style, callback) {
+function xhrLoadStyle(style, callback) {
   HTMLImports.xhr.load(atImportUrlFromStyle(style), function (err, resource,
       url) {
     replaceAtImportWithCssText(this, url, resource);
