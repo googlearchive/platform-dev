@@ -30,6 +30,8 @@ htmlSuite('styling', function() {
   htmlTest('html/styling/colon-host.html?shadow&register');
   htmlTest('html/styling/combinators.html');
   htmlTest('html/styling/combinators.html?shadow&register');
+  htmlTest('html/styling/before-content.html');
+  htmlTest('html/styling/before-content.html?shadow&register');
 });
 
 htmlSuite('Library Cooperation', function() {

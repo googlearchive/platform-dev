@@ -535,6 +535,12 @@ var ShadowCSS = {
         polyfillHost).replace(colonAncestorRe, polyfillAncestor);
   },
   propertiesFromRule: function(rule) {
+    // TODO(sorvell): Safari cssom incorrectly removes quotes from the content
+    // property. (https://bugs.webkit.org/show_bug.cgi?id=118045)
+    if (rule.style.content && !rule.style.content.match(/['"]+/)) {
+      return rule.style.cssText.replace(/content:[^;]*;/g, 'content: \'' + 
+          rule.style.content + '\';');
+    }
     return rule.style.cssText;
   }
 };

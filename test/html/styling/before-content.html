@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>content in :before pseudo-class</title>
+  <script src="../../../platform.js"></script>
+  <script src="register.js"></script>
+  <script src="../../../../tools/test/htmltest.js"></script>
+  <script src="../../../../tools/test/chai/chai.js"></script>
+</head>
+<body>
+  <x-test></x-test>
+
+  <template id="x-test">
+    <style>
+      :host {
+        display: block;
+      }
+      #one::before {
+        color: green;
+        content: "hithere"; /* no space */
+        background: red;
+      }
+      #two::before {
+        content: "hithere ";
+      }
+      #three::before {
+        content: " hithere";
+      }
+      #four::before {
+        content: "hi there";
+      }
+    </style>
+    <div id="one">1</div>
+    <div id="two">2</div>
+    <div id="three">3</div>
+    <div id="four">4</div>
+  </template>
+  <script>
+    register('x-test', '', HTMLElement.prototype);
+    
+    document.addEventListener('WebComponentsReady', function() {
+      setTimeout(function() {
+        var root = document.querySelector('x-test').shadowRoot;
+        function testContent(node, content) {
+          chai.assert(getComputedStyle(node, ':before').content, content, 'content ' +
+              'property set correctly.');
+        }
+        testContent(root.querySelector('#one'), 'hithere');
+        testContent(root.querySelector('#two'), 'hithere ');
+        testContent(root.querySelector('#three'), ' hithere');
+        testContent(root.querySelector('#four'), 'hi there');
+        done();
+      });
+    });
+  </script>
+  
+  
+</body>
+</html>
