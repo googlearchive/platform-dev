@@ -85,17 +85,18 @@ license that can be found in the LICENSE file.
       chai.assert.equal(getComputedStyle(zot).color, 'rgb(255, 255, 255)',
         '^^ styles are applied (color)');
 
-      var fooDiv = foo.shadowRoot.querySelector('.foo');
-      chai.assert.equal(getComputedStyle(fooDiv).backgroundColor, 'rgb(255, 165, 0)',
-        'combinators applied via style in main document');
-      if (window.ShadowDOMPolyfill) {
+      // NOTE: native import styles not shimmed under SD polyfill
+      if (window.ShadowDOMPolyfill && !HTMLImports.useNative) {
+        var fooDiv = foo.shadowRoot.querySelector('.foo');
+        var zotDiv = xZot.shadowRoot.querySelector('.zot-inner');
         var fooDiv2 = foo.shadowRoot.querySelector('.foo2');
         chai.assert.equal(getComputedStyle(fooDiv2).backgroundColor, 'rgb(0, 128, 0)',
           'combinators applied via stylesheet in import');
+        chai.assert.equal(getComputedStyle(fooDiv).backgroundColor, 'rgb(255, 165, 0)',
+            'combinators applied via style in main document');
+        chai.assert.equal(getComputedStyle(zotDiv).backgroundColor, 'rgb(0, 0, 255)',
+            'combinators applied via stylesheet in main document');
       }
-      var zotDiv = xZot.shadowRoot.querySelector('.zot-inner');
-      chai.assert.equal(getComputedStyle(zotDiv).backgroundColor, 'rgb(0, 0, 255)',
-        'combinators applied via stylesheet in main document');
       done();
     });
   </script>
