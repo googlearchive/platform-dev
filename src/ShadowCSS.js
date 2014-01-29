@@ -629,10 +629,22 @@ if (window.ShadowDOMPolyfill) {
   var head = doc.querySelector('head');
   head.insertBefore(getSheet(), head.childNodes[0]);
 
+  // TODO(sorvell): monkey-patching HTMLImports is abusive;
+  // consider a better solution.
   document.addEventListener('DOMContentLoaded', function() {
     if (window.HTMLImports && !HTMLImports.useNative) {
-      HTMLImports.importer.preloadSelectors += 
-          ', link[rel=stylesheet]:not([nopolyfill])';
+      var STYLE_LINK_TYPE = 'stylesheet';
+      var SHEET_SELECTOR = 'link[rel=' + STYLE_LINK_TYPE + ']';
+      var STYLE_SELECTOR = 'style';
+      HTMLImports.importer.documentPreloadSelectors += ',' + SHEET_SELECTOR;
+      HTMLImports.importer.importsPreloadSelectors += ',' + SHEET_SELECTOR;
+
+      HTMLImports.parser.documentSelectors = [
+        HTMLImports.parser.documentSelectors,
+        SHEET_SELECTOR,
+        STYLE_SELECTOR
+      ].join(',');
+  
       HTMLImports.parser.parseGeneric = function(elt) {
         if (elt.shadowCssShim) {
           return;
@@ -658,7 +670,18 @@ if (window.ShadowDOMPolyfill) {
         if (style.parentNode !== head) {
           head.appendChild(style);
         }
+        this.markParsingComplete(elt);
       }
+
+      var hasResource = HTMLImports.parser.hasResource;
+      HTMLImports.parser.hasResource = function(node) {
+        if (node.localName === 'link' && node.rel === 'stylesheet') {
+          return (node.__resource);
+        } else {
+          return hasResource.call(this, node);
+        }
+      }
+
     }
   });
 }
