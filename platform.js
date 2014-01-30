@@ -35,7 +35,7 @@ function processFlags(flags) {
     ];
 
     var Lib = [
-      '../url/url.js',
+      '../URL/url.js',
       'src/lang.js',
       'src/dom.js',
       'src/template.js',
