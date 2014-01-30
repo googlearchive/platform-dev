@@ -35,7 +35,6 @@ function processFlags(flags) {
     ];
 
     var Lib = [
-      '../URL/url.js',
       'src/lang.js',
       'src/dom.js',
       'src/template.js',
@@ -61,6 +60,8 @@ function processFlags(flags) {
       '../CustomElements/custom-elements.js',
       'src/patches-custom-elements.js',
       'src/microtask.js',
+      '../URL/url.js',
+      "src/url.js",
       'src/loader.js'
     ];
 

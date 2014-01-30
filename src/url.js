@@ -107,6 +107,6 @@ function makeRelPath(source, target) {
 }
 
 // exports
-scope.url = urlResolver;
+scope.urlResolver = urlResolver;
 
 })(Platform);

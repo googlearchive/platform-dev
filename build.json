@@ -1,5 +1,6 @@
 [
   "../URL/url.js",
+  "src/url.js",
   "../WeakMap/weakmap.js",
   "../observe-js/src/observe.js",
   "build/if-poly.js",

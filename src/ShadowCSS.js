@@ -148,8 +148,6 @@
 */
 (function(scope) {
 
-var loader = scope.loader;
-
 var ShadowCSS = {
   strictStyling: false,
   registry: {},
@@ -612,12 +610,15 @@ function addCssToDocument(cssText) {
   }
 }
 
+var SHIM_ATTRIBUTE = 'shim-shadowdom';
+var SHIMMED_ATTRIBUTE = 'shim-shadowdom-css';
+
 var sheet;
 function getSheet() {
   if (!sheet) {
     sheet = document.createElement("style");
-    sheet.setAttribute('ShadowCSSShim', '');
-    sheet.shadowCssShim = true;
+    sheet.setAttribute(SHIMMED_ATTRIBUTE, '');
+    sheet[SHIMMED_ATTRIBUTE] = true;
   }
   return sheet;
 }
@@ -632,50 +633,55 @@ if (window.ShadowDOMPolyfill) {
   // TODO(sorvell): monkey-patching HTMLImports is abusive;
   // consider a better solution.
   document.addEventListener('DOMContentLoaded', function() {
+    var urlResolver = scope.urlResolver;
+    
     if (window.HTMLImports && !HTMLImports.useNative) {
-      var STYLE_LINK_TYPE = 'stylesheet';
-      var SHEET_SELECTOR = 'link[rel=' + STYLE_LINK_TYPE + ']';
-      var STYLE_SELECTOR = 'style';
-      HTMLImports.importer.documentPreloadSelectors += ',' + SHEET_SELECTOR;
-      HTMLImports.importer.importsPreloadSelectors += ',' + SHEET_SELECTOR;
+      var SHIM_SHEET_SELECTOR = 'link[rel=stylesheet]' +
+          '[' + SHIM_ATTRIBUTE + ']';
+      var SHIM_STYLE_SELECTOR = 'style[' + SHIM_ATTRIBUTE + ']';
+      HTMLImports.importer.documentPreloadSelectors += ',' + SHIM_SHEET_SELECTOR;
+      HTMLImports.importer.importsPreloadSelectors += ',' + SHIM_SHEET_SELECTOR;
 
       HTMLImports.parser.documentSelectors = [
         HTMLImports.parser.documentSelectors,
-        SHEET_SELECTOR,
-        STYLE_SELECTOR
+        SHIM_SHEET_SELECTOR,
+        SHIM_STYLE_SELECTOR
       ].join(',');
   
       HTMLImports.parser.parseGeneric = function(elt) {
-        if (elt.shadowCssShim) {
+        if (elt[SHIMMED_ATTRIBUTE]) {
           return;
         }
-        var style = elt;
-        if (!elt.hasAttribute('nopolyfill')) {
-          if (elt.__resource) {
-            style = elt.ownerDocument.createElement('style');
-            style.textContent = Platform.loader.resolveUrlsInCssText(
-                elt.__resource, elt.href);
-            // remove links from main document
-            if (elt.ownerDocument === doc) {
-              elt.parentNode.removeChild(elt);
-            }
-          } else {
-            Platform.loader.resolveUrlsInStyle(style);  
-          }
-          var styles = [style];
-          style.textContent = ShadowCSS.stylesToShimmedCssText(styles, styles);
-          style.shadowCssShim = true;
+        var style = elt.__importElement || elt;
+        if (elt.__resource) {
+          style = elt.ownerDocument.createElement('style');
+          style.textContent = urlResolver.resolveCssText(
+              elt.__resource, elt.href);
+        } else {
+          urlResolver.resolveStyles(style);  
         }
+        var styles = [style];
+        style.textContent = ShadowCSS.stylesToShimmedCssText(styles, styles);
+        style.removeAttribute(SHIM_ATTRIBUTE, '');
+        style.setAttribute(SHIMMED_ATTRIBUTE, '');
+        style[SHIMMED_ATTRIBUTE] = true;
         // place in document
         if (style.parentNode !== head) {
-          head.appendChild(style);
+          // replace links in head
+          if (elt.parentNode === head) {
+            head.replaceChild(style, elt);
+          } else {
+            head.appendChild(style);
+          }
         }
+        style.__importParsed = true
         this.markParsingComplete(elt);
       }
 
       var hasResource = HTMLImports.parser.hasResource;
       HTMLImports.parser.hasResource = function(node) {
-        if (node.localName === 'link' && node.rel === 'stylesheet') {
+        if (node.localName === 'link' && node.rel === 'stylesheet' &&
+            node.hasAttribute(SHIM_ATTRIBUTE)) {
           return (node.__resource);
         } else {
           return hasResource.call(this, node);
