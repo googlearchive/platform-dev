@@ -26,6 +26,7 @@ module.exports = function(karma) {
       {pattern: 'TemplateBinding/src/*.css', included: false},
       {pattern: 'TemplateBinding/src/*.js', included: false},
       {pattern: 'TemplateBinding/tests/*.js', included: false},
+      {pattern: 'URL/url.js', included: false},
       {pattern: 'WeakMap/weakmap.js', included: false},
       {pattern: 'observe-js/src/*.js', included: false},
       {pattern: 'observe-js/util/*.js', included: false},
