@@ -21,8 +21,7 @@ function processFlags(flags) {
     if (flags.shadow === 'native') {
       flags.shadow = false;
     } else {
-      flags.shadow = flags.shadow || !HTMLElement.prototype.createShadowRoot
-          && 'polyfill';
+      flags.shadow = flags.shadow || !HTMLElement.prototype.createShadowRoot;
     }
 
     var ShadowDOMNative = [
