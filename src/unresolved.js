@@ -15,7 +15,7 @@
   var UNRESOLVED_SELECTOR = '[' + UNRESOLVED + ']';
   var style = document.createElement('style');
   style.textContent = UNRESOLVED_SELECTOR + ' { ' +
-      'opacity: 0; display: block; overflow: hidden; } \n' +
+      'opacity: 0; display: block; overflow: hidden; } \n';
   var head = document.querySelector('head');
   head.insertBefore(style, head.firstChild);
 
