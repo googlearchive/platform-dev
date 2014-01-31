@@ -19,13 +19,13 @@
 
   Shimmed features:
 
-  * @host: ShadowDOM allows styling of the shadowRoot's host element using the 
-  @host rule. To shim this feature, the @host styles are reformatted and 
-  prefixed with a given scope name and promoted to a document level stylesheet.
+  * :host, :ancestor: ShadowDOM allows styling of the shadowRoot's host
+  element using the :host rule. To shim this feature, the :host styles are 
+  reformatted and prefixed with a given scope name and promoted to a 
+  document level stylesheet.
   For example, given a scope name of .foo, a rule like this:
   
-    @host {
-      * {
+    :host {
         background: red;
       }
     }
@@ -77,34 +77,6 @@
   Note that elements that are dynamically added to a scope must have the scope
   selector added to them manually.
 
-  * ::pseudo: These rules are converted to rules that take advantage of the
-  pseudo attribute. For example, a shadowRoot like this inside an x-foo
-
-    <div pseudo="x-special">Special</div>
-
-  with a rule like this:
-
-    x-foo::x-special { ... }
-
-  becomes:
-
-    x-foo [pseudo=x-special] { ... }
-
-  * ::part(): These rules are converted to rules that take advantage of the
-  part attribute. For example, a shadowRoot like this inside an x-foo
-
-    <div part="special">Special</div>
-
-  with a rule like this:
-
-    x-foo::part(special) { ... }
-
-  becomes:
-
-    x-foo [part=special] { ... }    
-  
-  Unaddressed ShadowDOM styling features:
-  
   * upper/lower bound encapsulation: Styles which are defined outside a
   shadowRoot should not cross the ShadowDOM boundary and should not apply
   inside a shadowRoot.
@@ -124,7 +96,7 @@
   via descendent selectors. For example, with a shadowRoot like this:
   
     <style>
-      content::-webkit-distributed(div) {
+      ::content(div) {
         background: red;
       }
     </style>
@@ -134,7 +106,7 @@
   
     <style>
       / *@polyfill .content-container div * / 
-      content::-webkit-distributed(div) {
+      ::content(div) {
         background: red;
       }
     </style>
@@ -155,7 +127,7 @@ var ShadowCSS = {
   // 1. cache root styles by name
   // 2. optionally tag root nodes with scope name
   // 3. shim polyfill directives /* @polyfill */ and /* @polyfill-rule */
-  // 4. shim @host and scoping
+  // 4. shim :host and scoping
   shimStyling: function(root, name, extendsName) {
     var typeExtension = this.isTypeExtension(extendsName);
     // use caching to make working with styles nodes easier and to facilitate
@@ -180,7 +152,7 @@ var ShadowCSS = {
     // add style to document
     addCssToDocument(cssText);
   },
-  // apply @polyfill rules + @host and scope shimming
+  // apply @polyfill rules + :host and scope shimming
   stylesToShimmedCssText: function(rootStyles, scopeStyles, name,
       typeExtension) {
     name = name || '';
@@ -188,8 +160,7 @@ var ShadowCSS = {
     // scoping process takes care of shimming these
     this.insertPolyfillDirectives(rootStyles);
     this.insertPolyfillRules(rootStyles);
-    var cssText = this.shimAtHost(scopeStyles, name, typeExtension) +
-        this.shimScoping(scopeStyles, name, typeExtension);
+    var cssText = this.shimScoping(scopeStyles, name, typeExtension);
     // note: we only need to do rootStyles since these are unscoped.
     cssText += this.extractPolyfillUnscopedRules(rootStyles);
     return cssText;
@@ -312,57 +283,6 @@ var ShadowCSS = {
     }
     return r;
   },
-  // form: @host { .foo { declarations } }
-  // becomes: scopeName.foo { declarations }
-  shimAtHost: function(styles, name, typeExtension) {
-    if (styles) {
-      return this.convertAtHostStyles(styles, name, typeExtension);
-    }
-  },
-  convertAtHostStyles: function(styles, name, typeExtension) {
-    var cssText = stylesToCssText(styles), self = this;
-    cssText = cssText.replace(hostRuleRe, function(m, p1) {
-      return self.scopeHostCss(p1, name, typeExtension);
-    });
-    cssText = rulesToCss(this.findAtHostRules(cssToRules(cssText),
-        this.makeScopeMatcher(name, typeExtension)));
-    return cssText;
-  },
-  scopeHostCss: function(cssText, name, typeExtension) {
-    var self = this;
-    return cssText.replace(selectorRe, function(m, p1, p2) {
-      return self.scopeHostSelector(p1, name, typeExtension) + ' ' + p2 + '\n\t';
-    });
-  },
-  // supports scopig by name and  [is=name] syntax
-  scopeHostSelector: function(selector, name, typeExtension) {
-    var r = [], parts = selector.split(','), is = '[is=' + name + ']';
-    parts.forEach(function(p) {
-      p = p.trim();
-      // selector: *|:scope -> name
-      if (p.match(hostElementRe)) {
-        p = p.replace(hostElementRe, typeExtension ? is + '$1$3' :
-            name + '$1$3');
-      // selector: .foo -> name.foo (OR) [bar] -> name[bar]
-      } else if (p.match(hostFixableRe)) {
-        p = typeExtension ? is + p : name + p;
-      }
-      r.push(p);
-    }, this);
-    return r.join(', ');
-  },
-  // consider styles that do not include component name in the selector to be
-  // unscoped and in need of promotion; 
-  // for convenience, also consider keyframe rules this way.
-  findAtHostRules: function(cssRules, matcher) {
-    return Array.prototype.filter.call(cssRules, 
-      this.isHostRule.bind(this, matcher));
-  },
-  isHostRule: function(matcher, cssRule) {
-    return (cssRule.selectorText && cssRule.selectorText.match(matcher)) ||
-      (cssRule.cssRules && this.findAtHostRules(cssRule.cssRules, matcher).length) ||
-      (cssRule.type == CSSRule.WEBKIT_KEYFRAMES_RULE);
-  },
   /* Ensure styles are scoped. Pseudo-scoping takes a rule like:
    * 
    *  .foo {... } 
@@ -377,26 +297,16 @@ var ShadowCSS = {
     }
   },
   convertScopedStyles: function(styles, name, typeExtension) {
-    var cssText = stylesToCssText(styles).replace(hostRuleRe, '');
+    var cssText = stylesToCssText(styles);
     cssText = this.insertPolyfillHostInCssText(cssText);
     cssText = this.convertColonHost(cssText);
     cssText = this.convertColonAncestor(cssText);
-    // TODO(sorvell): deprecated, remove
-    cssText = this.convertPseudos(cssText);
-    // TODO(sorvell): deprecated, remove
-    cssText = this.convertParts(cssText);
     cssText = this.convertCombinators(cssText);
     var rules = cssToRules(cssText);
     if (name) {
       cssText = this.scopeRules(rules, name, typeExtension);
     }
     return cssText;
-  },
-  convertPseudos: function(cssText) {
-    return cssText.replace(cssPseudoRe, ' [pseudo=$1]');
-  },
-  convertParts: function(cssText) {
-    return cssText.replace(cssPartRe, ' [part=$1]');
   },
   /*
    * convert a rule like :host(.foo) > .bar { }
@@ -543,10 +453,7 @@ var ShadowCSS = {
   }
 };
 
-var hostRuleRe = /@host[^{]*{(([^}]*?{[^{]*?}[\s\S]*?)+)}/gim,
-    selectorRe = /([^{]*)({[\s\S]*?})/gim,
-    hostElementRe = /(.*)((?:\*)|(?:\:scope))(.*)/,
-    hostFixableRe = /^[.\[:]/,
+var selectorRe = /([^{]*)({[\s\S]*?})/gim,
     cssCommentRe = /\/\*[^*]*\*+([^/*][^*]*\*+)*\//gim,
     cssPolyfillCommentRe = /\/\*\s*@polyfill ([^*]*\*+([^/*][^*]*\*+)*\/)([^{]*?){/gim,
     cssPolyfillRuleCommentRe = /\/\*\s@polyfill-rule([^*]*\*+([^/*][^*]*\*+)*)\//gim,
