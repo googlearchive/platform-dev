@@ -46,9 +46,10 @@ module.exports = function(grunt) {
       },
       Platform: {
         options: {
-          sourceMap: 'build/platform.js.map',
+          sourceMap: true,
+          sourceMapName: 'build/platform.js.map',
           sourceMapIn: 'build/platform.concat.js.map',
-          sourceMappingURL: "platform.js.map",
+          sourceMapIncludeSources: true,
           banner: grunt.file.read('LICENSE') + '// @version: <%= buildversion %>'
         },
         files: {
