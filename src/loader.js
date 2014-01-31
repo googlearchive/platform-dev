@@ -56,13 +56,6 @@ function createStyleElement(cssText, scope) {
   return style;
 }
 
-// TODO(sorvell): factor path fixup for easier reuse; parts are currently
-// needed by HTMLImports and ShadowDOM style shimming.
-function resolveUrlsInCssText(cssText, url) {
-  return HTMLImports.path.resolveUrlsInCssText(cssText,
-      getUrl(url));
-}
-
 // TODO(sorvell): use a common loader shared with HTMLImports polyfill
 // currently, this just loads the first @import per style element 
 // and does not recurse into loaded elements; we'll address this with a 
