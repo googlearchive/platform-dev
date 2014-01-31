@@ -92,9 +92,11 @@ license that can be found in the LICENSE file.
         var zotDiv = xZot.shadowRoot.querySelector('.zot-inner');
         var fooDiv2 = foo.shadowRoot.querySelector('.foo2');
         
-        // TODO(sorvell): ShadowDOM bug?
+        // TODO(sorvell): test blocked on 
+        // https://code.google.com/p/chromium/issues/detail?id=339657
         //chai.assert.equal(getComputedStyle(fooDiv2).backgroundColor, 'rgb(0, 128, 0)',
         //  'combinators applied via stylesheet in import');
+
         chai.assert.equal(getComputedStyle(fooDiv).backgroundColor, 'rgb(255, 165, 0)',
             'combinators applied via style in main document');
         chai.assert.equal(getComputedStyle(zotDiv).backgroundColor, 'rgb(0, 0, 255)',
