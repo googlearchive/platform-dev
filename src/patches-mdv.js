@@ -35,7 +35,6 @@ window.addEventListener('WebComponentsReady', function() {
   }
 });
 
-
 if (window.CustomElements && !CustomElements.useNative) {
   var originalImportNode = Document.prototype.importNode;
   Document.prototype.importNode = function(node, deep) {

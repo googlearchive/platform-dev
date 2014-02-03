@@ -39,7 +39,8 @@ function processFlags(flags) {
       'src/dom.js',
       'src/template.js',
       'src/inspector.js',
-      'src/unresolved.js'
+      'src/unresolved.js',
+      'src/module.js'
     ];
 
     var MDV = [
@@ -61,7 +62,7 @@ function processFlags(flags) {
       'src/patches-custom-elements.js',
       'src/microtask.js',
       '../URL/url.js',
-      "src/url.js",
+      'src/url.js',
       'src/loader.js'
     ];
 
