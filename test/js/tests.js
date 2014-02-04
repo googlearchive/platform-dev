@@ -17,6 +17,8 @@ htmlSuite('integration', function() {
   htmlTest('html/smoke.html?shadow&register');
   htmlTest('html/mdv-shadow.html');
   htmlTest('html/template-repeat-wrappers.html');
+  htmlTest('html/ce-import.html');
+  htmlTest('html/ce-import.html?shadow');
 });
 
 htmlSuite('styling', function() {

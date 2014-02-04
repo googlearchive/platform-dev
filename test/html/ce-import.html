@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <script src="../../../tools/test/htmltest.js"></script>
+    <script src="../../../tools/test/chai/chai.js"></script>
+    <script src="../../platform.js" debug></script>
+  </head>
+  <body>
+    <x-foo></x-foo>
+    <script>
+      window.addEventListener('WebComponentsReady', function() {
+        var xfoo = document.querySelector('x-foo');
+        chai.assert.isUndefined(xfoo.isCreated);
+        var link = document.createElement('link');
+        link.rel = 'import';
+        link.href = 'element-import.html';
+        document.head.appendChild(link);
+        HTMLImports.whenImportsReady(function() {
+          chai.assert.isTrue(xfoo.isCreated, 'element in main document, registered in dynamic import is upgraded');
+          var ix = link.import.querySelector('x-foo');
+          chai.assert.isTrue(ix.isCreated, 'element in import, registered in dynamic import is upgraded');
+          done();
+        });
+      });
+    </script>
+  </body>
+</html>
