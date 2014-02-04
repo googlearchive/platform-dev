@@ -10,13 +10,18 @@ var thisFile = 'platform.js';
 var scopeName = 'Platform';
 
 function processFlags(flags) {
+
   if (flags.build) {
+
     // use the minified build
     this.modules = ['platform.min.js'];
+
   } else {
+
     // If any of these flags match 'native', then force native ShadowDOM; any
     // other truthy value, or failure to detect native
     // ShadowDOM, results in polyfill 
+
     flags.shadow = (flags.shadow || flags.shadowdom || flags.polyfill);
     if (flags.shadow === 'native') {
       flags.shadow = false;
@@ -34,50 +39,47 @@ function processFlags(flags) {
       'src/ShadowCSS.js'
     ];
 
-    var Lib = [
-      'src/lang.js',
-      'src/dom.js',
-      'src/template.js',
-      'src/inspector.js',
-      'src/unresolved.js',
-      'src/module.js'
-    ];
-
-    var MDV = [
-      '../observe-js/src/observe.js',
-      '../NodeBind/src/NodeBind.js',
-      '../TemplateBinding/src/TemplateBinding.js',
-      '../polymer-expressions/third_party/esprima/esprima.js',
-      '../polymer-expressions/src/polymer-expressions.js',
-      'src/patches-mdv.js'
-    ];
-
-    var Pointer = [
-      '../PointerGestures/pointergestures.js'
-    ];
-
-    var WebElements = [
-      '../HTMLImports/html-imports.js',
-      '../CustomElements/custom-elements.js',
-      'src/patches-custom-elements.js',
-      'src/microtask.js',
-      '../URL/url.js',
-      'src/url.js',
-      'src/loader.js'
-    ];
-
     // select ShadowDOM impl
+
     var ShadowDOM = flags.shadow ? ShadowDOMPolyfill : ShadowDOMNative;
 
-    // construct active dependency list
+    // construct full dependency list
+
     this.modules = [].concat(
       ShadowDOM,
-      Lib,
-      WebElements,
-      Pointer,
-      MDV
+      [
+        '../URL/url.js',
+        'src/lang.js',
+        'src/dom.js',
+        'src/template.js',
+        'src/inspector.js',
+        'src/unresolved.js',
+        'src/module.js',
+        'src/microtask.js',
+        'src/url.js',
+
+        '../HTMLImports/html-imports.js',
+        '../CustomElements/custom-elements.js',
+        'src/patches-custom-elements.js',
+        'src/loader.js',
+
+        // TODO(sjmiles): pointergestures.js loads pointerevents, but
+        // the build.json does not
+        '../PointerGestures/pointergestures.js',
+
+        // TODO(sjmiles): polymer-expressions.js does not load dependencies, but
+        // the build.json does
+        '../observe-js/src/observe.js',
+        '../NodeBind/src/NodeBind.js',
+        '../TemplateBinding/src/TemplateBinding.js',
+        '../polymer-expressions/third_party/esprima/esprima.js',
+        '../polymer-expressions/src/polymer-expressions.js',
+        'src/patches-mdv.js'
+      ]
     );
+
   }
+
 }
 
 // export
