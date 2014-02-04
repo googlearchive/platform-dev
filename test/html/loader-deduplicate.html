@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+  <head>
+    <title>Deduplicating Loader</title>
+    <meta charset="UTF-8">
+    <script>
+      var origXHR = window.XMLHttpRequest;
+      var XHRCount = 0;
+      window.XMLHttpRequest = function() {
+        XHRCount++;
+        return new origXHR();
+      };
+    </script>
+    <script src="../../../tools/test/htmltest.js"></script>
+    <script src="../../../tools/test/chai/chai.js"></script>
+    <script src="../../platform.js"></script>
+  </head>
+  <body>
+    <x-thing id="test">
+      import: styling/rules/colors.css;
+      import: styling/rules/colors.css;
+    </x-thing>
+    <script>
+      var assert = chai.assert;
+      var loader = new Platform.Loader(/import: ([^;]*)/g);
+      var test = document.querySelector('#test');
+      loader.process(test.textContent, document.baseURI, function(map) {
+        assert.equal(XHRCount, 1);
+        done();
+      });
+    </script>
+  </body>
+</html>
