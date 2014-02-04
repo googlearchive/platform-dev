@@ -1,11 +1,29 @@
 ﻿(function(scope) {
 
   function withDependencies(task, depends) {
-    return task.apply(this, depends && depends.map(marshal) || []);
+    depends = depends || [];
+    if (!depends.map) {
+      depends = [depends];
+    }
+    return task.apply(this, depends.map(marshal));
   }
 
-  function module(name, depends, moduleFactory) {
-    modules[name] = withDependencies(moduleFactory, depends);
+  function module(name, dependsOrFactory, moduleFactory) {
+    var module;
+    switch (arguments.length) {
+      case 0:
+        return;
+      case 1:
+        module = null;
+        break;
+      case 2:
+        module = dependsOrFactory.apply(this);
+        break;
+      default:
+        module = withDependencies(moduleFactory, dependsOrFactory);
+        break;
+    }
+    modules[name] = module;
   };
 
   function marshal(name) {
@@ -15,20 +33,15 @@
   var modules = {};
 
   function using(depends, task) {
-    if (HTMLImports.ready) {
+    HTMLImports.whenImportsReady(function() {
       withDependencies(task, depends);
-    } else {
-      addEventListener('HTMLImportsLoaded', function() {
-        withDependencies(task, depends);
-      });
-    }
+    });
   };
 
   // exports
 
   scope.marshal = marshal;
   scope.module = module;
-  scope.withDependencies = withDependencies;
   scope.using = using;
 
 })(window);
