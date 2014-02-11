@@ -163,7 +163,7 @@ var ShadowCSS = {
     var cssText = this.shimScoping(scopeStyles, name, typeExtension);
     // note: we only need to do rootStyles since these are unscoped.
     cssText += this.extractPolyfillUnscopedRules(rootStyles);
-    return cssText;
+    return cssText.trim();
   },
   registerDefinition: function(root, name, extendsName) {
     var def = this.registry[name] = {
@@ -302,8 +302,8 @@ var ShadowCSS = {
     cssText = this.convertColonHost(cssText);
     cssText = this.convertColonAncestor(cssText);
     cssText = this.convertCombinators(cssText);
-    var rules = cssToRules(cssText);
     if (name) {
+      var rules = cssToRules(cssText);
       cssText = this.scopeRules(rules, name, typeExtension);
     }
     return cssText;
@@ -555,17 +555,23 @@ if (window.ShadowDOMPolyfill) {
         SHIM_STYLE_SELECTOR
       ].join(',');
   
+      var originalParseGeneric = HTMLImports.parser.parseGeneric;
+
       HTMLImports.parser.parseGeneric = function(elt) {
         if (elt[SHIMMED_ATTRIBUTE]) {
           return;
         }
         var style = elt.__importElement || elt;
+        if (!style.hasAttribute(SHIM_ATTRIBUTE)) {
+          originalParseGeneric.call(this, elt);
+          return;
+        }
         if (elt.__resource) {
           style = elt.ownerDocument.createElement('style');
           style.textContent = urlResolver.resolveCssText(
               elt.__resource, elt.href);
         } else {
-          urlResolver.resolveStyles(style);  
+          urlResolver.resolveStyle(style);  
         }
         var styles = [style];
         style.textContent = ShadowCSS.stylesToShimmedCssText(styles, styles);
@@ -581,7 +587,7 @@ if (window.ShadowDOMPolyfill) {
             head.appendChild(style);
           }
         }
-        style.__importParsed = true
+        style.__importParsed = true;
         this.markParsingComplete(elt);
       }
 

@@ -16,6 +16,11 @@ license that can be found in the LICENSE file.
     <x-foo></x-foo>
     <script>
       window.addEventListener('WebComponentsReady', function() {
+        // native imports + shadowdom polyfill is not supported so just pass
+        if (HTMLImports.useNative && window.ShadowDOMPolyfill) {
+          done();
+          return;
+        }
         var xfoo = document.querySelector('x-foo');
         chai.assert.isUndefined(xfoo.isCreated);
         var link = document.createElement('link');
