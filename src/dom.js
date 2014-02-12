@@ -133,7 +133,7 @@
   // deliver queued delcarations
   scope.deliverDeclarations = function() {
     scope.deliverDeclarations = function() {
-     throw 'Attempt to load platform.js twice';
+     throw 'Possible attempt to load Polymer twice';
     };
     return elementDeclarations;
   }
