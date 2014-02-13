@@ -23,6 +23,7 @@
   "../CustomElements/build.json",
   "src/patches-custom-elements.js",
   "src/loader.js",
+  "src/styleloader.js",
 
   "../PointerEvents/build.json",
   "../PointerGestures/build.json",

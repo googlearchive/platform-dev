@@ -62,6 +62,7 @@ function processFlags(flags) {
         '../CustomElements/custom-elements.js',
         'src/patches-custom-elements.js',
         'src/loader.js',
+        'src/styleloader.js',
 
         // TODO(sjmiles): pointergestures.js loads pointerevents, but
         // the build.json does not

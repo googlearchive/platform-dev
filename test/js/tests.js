@@ -21,6 +21,10 @@ htmlSuite('integration', function() {
   htmlTest('html/ce-import.html?shadow');
 });
 
+htmlSuite('URL Loader', function() {
+  htmlTest('html/loader-deduplicate.html');
+});
+
 htmlSuite('styling', function() {
   htmlTest('html/styling/pseudo-scoping.html');
   htmlTest('html/styling/pseudo-scoping.html?shadow&register');
@@ -36,6 +40,7 @@ htmlSuite('styling', function() {
   htmlTest('html/styling/before-content.html?shadow&register');
   htmlTest('html/styling/before-content.html');
   htmlTest('html/styling/style-import.html');
+  htmlTest('html/styling/recursive-style-import.html');
 });
 
 htmlSuite('Library Cooperation', function() {
