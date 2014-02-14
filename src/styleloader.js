@@ -69,7 +69,7 @@ var loader = {
     for (var i=0, s; (i<l) && (s=styles[i]); i++) {
       styleResolver.resolveNode(s, loadedStyle);
     }
-  },
+  }
 };
 
 // use the platform to preload styles
@@ -93,12 +93,6 @@ function createStyleElement(cssText, scope) {
   var style = scope.createElement('style');
   style.textContent = cssText;
   return style;
-}
-
-function xhrLoadStyle(style, callback) {
-  styleResolver.resolveNode(style, function(){
-    callback(style);
-  });
 }
 
 // exports
