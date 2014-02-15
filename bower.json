@@ -12,13 +12,13 @@
     "components"
   ],
   "dependencies": {
-    "CustomElements": "Polymer/CustomElements#master",
-    "HTMLImports": "Polymer/HTMLImports#master",
-    "PointerGestures":"Polymer/PointerGestures#master",
-    "ShadowDOM": "Polymer/ShadowDOM#master",
-    "polymer-expressions": "Polymer/polymer-expressions#master",
-    "tools": "Polymer/tools#master",
-    "URL": "Polymer/URL#master"
+    "CustomElements": "Polymer/CustomElements#0.2.0",
+    "HTMLImports": "Polymer/HTMLImports#0.2.0",
+    "PointerGestures": "Polymer/PointerGestures#0.2.0",
+    "ShadowDOM": "Polymer/ShadowDOM#0.2.0",
+    "polymer-expressions": "Polymer/polymer-expressions#0.2.0",
+    "tools": "Polymer/tools#0.2.0",
+    "URL": "Polymer/URL#0.2.0"
   },
   "license": "BSD",
   "private": true,
@@ -28,5 +28,6 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "version": "0.2.0"
 }
