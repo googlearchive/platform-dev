@@ -21,6 +21,9 @@ var urlResolver = {
       }
     }
   },
+  resolveTemplate: function(template) {
+    this.resolveDom(template.content, template.ownerDocument.baseURI);
+  },
   resolveStyles: function(root, url) {
     var styles = root.querySelectorAll('style');
     if (styles) {
