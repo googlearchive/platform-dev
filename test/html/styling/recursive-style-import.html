@@ -45,7 +45,7 @@ license that can be found in the LICENSE file.
       assertStyle(target, 'border-left-color', 'rgb(128, 128, 128)');
       assertStyle(target, 'border-bottom-style', 'solid');
       // flatten the @import rules and test again
-      Platform.loader.xhrStyles([style], function() {
+      Platform.styleResolver.loadStyles([style], function() {
         var cssRules = style.sheet.cssRules;
         assert.equal(cssRules.length, 6);
         for(var i = 0; i < cssRules.length; i++) {
