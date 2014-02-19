@@ -81,7 +81,7 @@
         callback.call(scope, null, request);
       };
       request.onerror = function() {
-        callback.call(scope, request, null);
+        callback.call(scope, null, request);
       };
       return request;
     }
