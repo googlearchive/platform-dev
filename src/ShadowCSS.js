@@ -128,7 +128,7 @@ var ShadowCSS = {
   // 2. optionally tag root nodes with scope name
   // 3. shim polyfill directives /* @polyfill */ and /* @polyfill-rule */
   // 4. shim :host and scoping
-  shimStyling: function(root, name, extendsName) {
+  shimStyling: function(root, name, extendsName, ownSheet) {
     var typeExtension = this.isTypeExtension(extendsName);
     // use caching to make working with styles nodes easier and to facilitate
     // lookup of extendee
@@ -150,7 +150,11 @@ var ShadowCSS = {
       s.parentNode.removeChild(s);
     }
     // add style to document
-    addCssToDocument(cssText);
+    if (ownSheet) {
+      addOwnSheet(cssText, name);
+    } else {
+      addCssToDocument(cssText);
+    }
   },
   // apply @polyfill rules + :host and scope shimming
   stylesToShimmedCssText: function(rootStyles, scopeStyles, name,
@@ -303,8 +307,12 @@ var ShadowCSS = {
     cssText = this.convertColonAncestor(cssText);
     cssText = this.convertCombinators(cssText);
     if (name) {
-      var rules = cssToRules(cssText);
-      cssText = this.scopeRules(rules, name, typeExtension);
+      var self = this, cssText;
+      
+      withCssRules(cssText, function(rules) {
+        cssText = self.scopeRules(rules, name, typeExtension);
+      });
+
     }
     return cssText;
   },
@@ -373,19 +381,21 @@ var ShadowCSS = {
   // change a selector like 'div' to 'name div'
   scopeRules: function(cssRules, name, typeExtension) {
     var cssText = '';
-    Array.prototype.forEach.call(cssRules, function(rule) {
-      if (rule.selectorText && (rule.style && rule.style.cssText)) {
-        cssText += this.scopeSelector(rule.selectorText, name, typeExtension, 
-          this.strictStyling) + ' {\n\t';
-        cssText += this.propertiesFromRule(rule) + '\n}\n\n';
-      } else if (rule.media) {
-        cssText += '@media ' + rule.media.mediaText + ' {\n';
-        cssText += this.scopeRules(rule.cssRules, name, typeExtension);
-        cssText += '\n}\n\n';
-      } else if (rule.cssText) {
-        cssText += rule.cssText + '\n\n';
-      }
-    }, this);
+    if (cssRules) {
+      Array.prototype.forEach.call(cssRules, function(rule) {
+        if (rule.selectorText && (rule.style && rule.style.cssText)) {
+          cssText += this.scopeSelector(rule.selectorText, name, typeExtension, 
+            this.strictStyling) + ' {\n\t';
+          cssText += this.propertiesFromRule(rule) + '\n}\n\n';
+        } else if (rule.type === CSSRule.MEDIA_RULE) {
+          cssText += '@media ' + rule.media.mediaText + ' {\n';
+          cssText += this.scopeRules(rule.cssRules, name, typeExtension);
+          cssText += '\n}\n\n';
+        } else if (rule.cssText) {
+          cssText += rule.cssText + '\n\n';
+        }
+      }, this);
+    }
     return cssText;
   },
   scopeSelector: function(selector, name, typeExtension, strict) {
@@ -499,9 +509,63 @@ function cssTextToStyle(cssText) {
 function cssToRules(cssText) {
   var style = cssTextToStyle(cssText);
   document.head.appendChild(style);
-  var rules = style.sheet.cssRules;
+  var rules = [];
+  if (style.sheet) {
+    // TODO(sorvell): Firefox throws when accessing the rules of a stylesheet
+    // with an @import
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=625013
+    try {
+      rules = style.sheet.cssRules;
+    } catch(e) {
+      //
+    }
+  } else {
+    console.warn('sheet not found', style);
+  }
   style.parentNode.removeChild(style);
   return rules;
+}
+
+var frame = document.createElement('iframe');
+frame.style.display = 'none';
+
+function initFrame() {
+  frame.initialized = true;
+  document.body.appendChild(frame);
+  var doc = frame.contentDocument;
+  var base = doc.createElement('base');
+  base.href = document.baseURI;
+  doc.head.appendChild(base);
+}
+
+function inFrame(fn) {
+  if (!frame.initialized) {
+    initFrame();
+  }
+  document.body.appendChild(frame);
+  fn(frame.contentDocument);
+  document.body.removeChild(frame);
+}
+
+// TODO(sorvell): use an iframe if the cssText contains an @import to workaround
+// https://code.google.com/p/chromium/issues/detail?id=345114
+var isChrome = navigator.userAgent.match('Chrome');
+function withCssRules(cssText, callback) {
+  if (!callback) {
+    return;
+  }
+  var rules;
+  if (cssText.match('@import') && isChrome) {
+    var style = cssTextToStyle(cssText);
+    inFrame(function(doc) {
+      doc.head.appendChild(style.impl);
+      rules = style.sheet.cssRules;
+      callback(rules);
+    });
+  } else {
+    rules = cssToRules(cssText);
+    callback(rules);
+  }
 }
 
 function rulesToCss(cssRules) {
@@ -515,6 +579,13 @@ function addCssToDocument(cssText) {
   if (cssText) {
     getSheet().appendChild(document.createTextNode(cssText));
   }
+}
+
+function addOwnSheet(cssText, name) {
+  var style = cssTextToStyle(cssText);
+  style.setAttribute(name, '');
+  style.setAttribute(SHIMMED_ATTRIBUTE, '');
+  document.head.appendChild(style);
 }
 
 var SHIM_ATTRIBUTE = 'shim-shadowdom';

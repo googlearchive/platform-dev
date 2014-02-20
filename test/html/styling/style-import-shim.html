@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <title>Shim @import</title>
+  <script src="../../../platform.js"></script>
+  <script src="../../../../tools/test/htmltest.js"></script>
+  <script src="../../../../tools/test/chai/chai.js"></script>
+</head>
+<body>
+  <div is="x-div"></div>
+   
+  <template id="x-template">
+      <style>@import url("imports/sheet1.css");</style>
+      <div class="red">red</div>
+  </template>
+
+  <script>
+    if (window.ShadowDOMPolyfill) {
+      document.addEventListener('WebComponentsReady', function() {
+        var t =  document.querySelector('#x-template');
+        Platform.ShadowCSS.shimStyling(t.content, 'x-div', 'div', true);
+
+        var XProto = Object.create(HTMLButtonElement.prototype);
+        XProto.createdCallback = function() {
+            this.appendChild(t.createInstance({}));
+        };
+
+        document.registerElement('x-div', {
+            prototype: XProto,
+            extends: 'div'
+        });
+        
+        var style = document.querySelector('style[x-div]');
+        chai.assert.isDefined(style, 'style element not added to page');
+        chai.assert.ok(style.textContent.match('imports/sheet1.css'), 'style textContent is unexpected')
+        done();
+      });
+    } else {
+      done();
+    }
+  </script>
+</body>
+</html>
