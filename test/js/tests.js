@@ -19,6 +19,7 @@ htmlSuite('integration', function() {
   htmlTest('html/template-repeat-wrappers.html');
   htmlTest('html/ce-import.html');
   htmlTest('html/ce-import.html?shadow');
+  htmlTest('html/ce-upgrade-order.html');
 });
 
 htmlSuite('URL Loader', function() {
