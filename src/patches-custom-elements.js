@@ -5,12 +5,6 @@
  */
 (function() {
 
-// inject style sheet
-var style = document.createElement('style');
-style.textContent = 'element {display: none !important;} /* injected by platform.js */';
-var head = document.querySelector('head');
-head.insertBefore(style, head.firstChild);
-
 if (window.ShadowDOMPolyfill) {
 
   // ensure wrapped inputs for these functions
