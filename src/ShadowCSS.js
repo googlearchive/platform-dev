@@ -130,7 +130,8 @@ var ShadowCSS = {
   // 4. shim :host and scoping
   shimStyling: function(root, name, extendsName) {
     var scopeStyles = this.prepareRoot(root, name, extendsName);
-    var scopeSelector = this.makeScopeSelector(name, extendsName);
+    var typeExtension = this.isTypeExtension(extendsName);
+    var scopeSelector = this.makeScopeSelector(name, typeExtension);
     // use caching to make working with styles nodes easier and to facilitate
     // lookup of extendee
     var cssText = stylesToCssText(scopeStyles, true);
@@ -157,9 +158,9 @@ var ShadowCSS = {
     cssText = this.insertDirectives(cssText);
     return this.scopeCssText(cssText, selector);
   },
-  makeScopeSelector: function(name, extendsName) {
+  makeScopeSelector: function(name, typeExtension) {
     if (name) {
-      return this.isTypeExtension(extendsName) ? '[is=' + name + ']' : name;
+      return typeExtension ? '[is=' + name + ']' : name;
     }
     return '';
   },
