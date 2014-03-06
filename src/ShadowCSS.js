@@ -385,7 +385,10 @@ var ShadowCSS = {
    * Convert ^ and ^^ combinators by replacing with space.
   */
   convertCombinators: function(cssText) {
-    return cssText.replace(/\^\^/g, ' ').replace(/\^/g, ' ');
+    for (var i=0; i < combinatorsRe.length; i++) {
+      cssText = cssText.replace(combinatorsRe[i], ' ');
+    }
+    return cssText;
   },
   // change a selector like 'div' to 'name div'
   scopeRules: function(cssRules, scopeSelector) {
@@ -518,7 +521,13 @@ var selectorRe = /([^{]*)({[\s\S]*?})/gim,
     /* host name without combinator */
     polyfillHostNoCombinator = polyfillHost + '-no-combinator',
     polyfillHostRe = new RegExp(polyfillHost, 'gim'),
-    polyfillAncestorRe = new RegExp(polyfillAncestor, 'gim');
+    polyfillAncestorRe = new RegExp(polyfillAncestor, 'gim'),
+    combinatorsRe = [
+      /\^\^/g,
+      /\^/g,
+      /\/shadow\//g,
+      /\/shadow-deep\//g
+    ];
 
 function stylesToCssText(styles, preserveComments) {
   var cssText = '';
