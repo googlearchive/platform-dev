@@ -15,30 +15,18 @@
   window.wrap = window.unwrap = function(n){
     return n;
   }
-
-  var originalCreateShadowRoot = Element.prototype.webkitCreateShadowRoot;
-  Element.prototype.webkitCreateShadowRoot = function() {
-    var elderRoot = this.webkitShadowRoot;
-    var root = originalCreateShadowRoot.call(this);
-    root.olderShadowRoot = elderRoot;
-    root.host = this;
-    CustomElements.watchShadow(this);
-    return root;
-  }
-
-  Object.defineProperties(Element.prototype, {
-    shadowRoot: {
-      get: function() {
-        return this.webkitShadowRoot;
-      }
-    },
-    createShadowRoot: {
-      value: function() {
-        return this.webkitCreateShadowRoot();
-      }
+  
+  addEventListener('DOMContentLoaded', function() {
+    if (CustomElements.useNative === false) {
+      var originalCreateShadowRoot = Element.prototype.createShadowRoot;
+      Element.prototype.createShadowRoot = function() {
+        var root = originalCreateShadowRoot.call(this);
+        CustomElements.watchShadow(this);
+        return root;
+      };
     }
   });
-
+  
   window.templateContent = function(inTemplate) {
     // if MDV exists, it may need to boostrap this template to reveal content
     if (window.HTMLTemplateElement && HTMLTemplateElement.bootstrap) {
