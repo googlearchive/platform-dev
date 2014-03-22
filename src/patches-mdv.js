@@ -26,14 +26,17 @@ function flush() {
 };
 
 // polling dirty checker
-var FLUSH_POLL_INTERVAL = 125;
-window.addEventListener('WebComponentsReady', function() {
-  flush();
-  // flush periodically if platform does not have object observe.
-  if (!Observer.hasObjectObserve) {
+// flush periodically if platform does not have object observe.
+if (!Observer.hasObjectObserve) {
+  var FLUSH_POLL_INTERVAL = 125;
+  window.addEventListener('WebComponentsReady', function() {
+    flush();
     scope.flushPoll = setInterval(flush, FLUSH_POLL_INTERVAL);
-  }
-});
+  });
+} else {
+  // make flush a no-op when we have Object.observe
+  flush = function() {};
+}
 
 if (window.CustomElements && !CustomElements.useNative) {
   var originalImportNode = Document.prototype.importNode;
