@@ -11,7 +11,8 @@ window.logFlags = window.logFlags || {};
     o = o.split('=');
     o[0] && (flags[o[0]] = o[1] || true);
   });
-  var entryPoint = document.currentScript || document.querySelector('script[src*="platform.js"]');
+  var entryPoint = document.currentScript ||
+      document.querySelector('script[src*="platform.js"]');
   if (entryPoint) {
     var a = entryPoint.attributes;
     for (var i = 0, n; i < a.length; i++) {
@@ -29,11 +30,17 @@ window.logFlags = window.logFlags || {};
   // If any of these flags match 'native', then force native ShadowDOM; any
   // other truthy value, or failure to detect native
   // ShadowDOM, results in polyfill
-  flags.shadow = (flags.shadow || flags.shadowdom || flags.polyfill);
+  flags.shadow = flags.shadow || flags.shadowdom || flags.polyfill;
   if (flags.shadow === 'native') {
     flags.shadow = false;
   } else {
     flags.shadow = flags.shadow || !HTMLElement.prototype.createShadowRoot;
+  }
+
+  if (flags.shadow && document.querySelectorAll('script').length > 1) {
+    console.warn('platform.js is not the first script on the page. ' +
+        'See http://www.polymer-project.org/docs/start/platform.html#setup ' +
+        'for details.');
   }
 
   // CustomElements polyfill flag
