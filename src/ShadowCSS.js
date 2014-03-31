@@ -477,11 +477,13 @@ var ShadowCSS = {
     // of troublesome properties to fix https://github.com/Polymer/platform/issues/53
     //
     // inherit rules can be omitted from cssText
-    if (rule.style.background == 'initial') {
-      cssText += 'background: initial; ';
-    }
-    if (rule.style.border == 'initial') {
-      cssText += 'border: initial; ';
+    // TODO(sorvell): remove when Blink bug is fixed:
+    // https://code.google.com/p/chromium/issues/detail?id=358273
+    var style = rule.style;
+    for (var i in style) {
+      if (style[i] === 'initial') {
+        cssText += i + ': initial; ';
+      }
     }
     return cssText;
   },
