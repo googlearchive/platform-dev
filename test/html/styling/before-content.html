@@ -34,11 +34,15 @@ license that can be found in the LICENSE file.
       #four::before {
         content: "hi there";
       }
+      #five::before {
+        content: attr(test);
+      }
     </style>
     <div id="one">1</div>
     <div id="two">2</div>
     <div id="three">3</div>
     <div id="four">4</div>
+    <div id="five" test="7"></div>
   </template>
   <script>
     register('x-test', '', HTMLElement.prototype);
@@ -46,14 +50,15 @@ license that can be found in the LICENSE file.
     document.addEventListener('WebComponentsReady', function() {
       setTimeout(function() {
         var root = document.querySelector('x-test').shadowRoot;
-        function testContent(node, content) {
-          chai.assert(getComputedStyle(node, ':before').content, content, 'content ' +
+        function testContent(node, contentRe) {
+          chai.assert.match(getComputedStyle(node, ':before').content, contentRe, 'content ' +
               'property set correctly.');
         }
-        testContent(root.querySelector('#one'), 'hithere');
-        testContent(root.querySelector('#two'), 'hithere ');
-        testContent(root.querySelector('#three'), ' hithere');
-        testContent(root.querySelector('#four'), 'hi there');
+        testContent(root.querySelector('#one'), new RegExp('hithere'));
+        testContent(root.querySelector('#two'), new RegExp('hithere '));
+        testContent(root.querySelector('#three'), new RegExp(' hithere'));
+        testContent(root.querySelector('#four'), new RegExp('hi there'));
+        testContent(root.querySelector('#five'), new RegExp('7|attr\\(test\\)'));
         done();
       });
     });

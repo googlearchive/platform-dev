@@ -19,7 +19,7 @@
 
   Shimmed features:
 
-  * :host, :ancestor: ShadowDOM allows styling of the shadowRoot's host
+  * :host, :host-context: ShadowDOM allows styling of the shadowRoot's host
   element using the :host rule. To shim this feature, the :host styles are 
   reformatted and prefixed with a given scope name and promoted to a 
   document level stylesheet.
@@ -193,7 +193,7 @@ var ShadowCSS = {
     def.rootStyles = styles;
     def.scopeStyles = def.rootStyles;
     var extendee = this.registry[def.extendsName];
-    if (extendee && (!root || root.querySelector('shadow'))) {
+    if (extendee) {
       def.scopeStyles = extendee.scopeStyles.concat(def.scopeStyles);
     }
     return def;
@@ -288,7 +288,7 @@ var ShadowCSS = {
     var unscoped = this.extractUnscopedRulesFromCssText(cssText);
     cssText = this.insertPolyfillHostInCssText(cssText);
     cssText = this.convertColonHost(cssText);
-    cssText = this.convertColonAncestor(cssText);
+    cssText = this.convertColonHostContext(cssText);
     cssText = this.convertCombinators(cssText);
     if (scopeSelector) {
       var self = this, cssText;
@@ -337,7 +337,7 @@ var ShadowCSS = {
         this.colonHostPartReplacer);
   },
   /*
-   * convert a rule like :ancestor(.foo) > .bar { }
+   * convert a rule like :host-context(.foo) > .bar { }
    *
    * to
    *
@@ -345,15 +345,15 @@ var ShadowCSS = {
    * 
    * and
    *
-   * :ancestor(.foo:host) .bar { ... }
+   * :host-context(.foo:host) .bar { ... }
    * 
    * to
    * 
    * scopeName.foo .bar { ... }
   */
-  convertColonAncestor: function(cssText) {
-    return this.convertColonRule(cssText, cssColonAncestorRe,
-        this.colonAncestorPartReplacer);
+  convertColonHostContext: function(cssText) {
+    return this.convertColonRule(cssText, cssColonHostContextRe,
+        this.colonHostContextPartReplacer);
   },
   convertColonRule: function(cssText, regExp, partReplacer) {
     // p1 = :host, p2 = contents of (), p3 rest of rule
@@ -371,7 +371,7 @@ var ShadowCSS = {
       }
     });
   },
-  colonAncestorPartReplacer: function(host, part, suffix) {
+  colonHostContextPartReplacer: function(host, part, suffix) {
     if (part.match(polyfillHost)) {
       return this.colonHostPartReplacer(host, part, suffix);
     } else {
@@ -461,17 +461,29 @@ var ShadowCSS = {
     return scoped;
   },
   insertPolyfillHostInCssText: function(selector) {
-    return selector.replace(hostRe, polyfillHost).replace(colonHostRe,
-        polyfillHost).replace(colonAncestorRe, polyfillAncestor);
+    return selector.replace(colonHostContextRe, polyfillHostContext).replace(
+        colonHostRe, polyfillHost);
   },
   propertiesFromRule: function(rule) {
+    var cssText = rule.style.cssText;
     // TODO(sorvell): Safari cssom incorrectly removes quotes from the content
     // property. (https://bugs.webkit.org/show_bug.cgi?id=118045)
-    if (rule.style.content && !rule.style.content.match(/['"]+/)) {
-      return rule.style.cssText.replace(/content:[^;]*;/g, 'content: \'' + 
+    // don't replace attr rules
+    if (rule.style.content && !rule.style.content.match(/['"]+|attr/)) {
+      cssText = cssText.replace(/content:[^;]*;/g, 'content: \'' + 
           rule.style.content + '\';');
     }
-    return rule.style.cssText;
+    // TODO(sorvell): we can workaround this issue here, but we need a list
+    // of troublesome properties to fix https://github.com/Polymer/platform/issues/53
+    //
+    // inherit rules can be omitted from cssText
+    if (rule.style.background == 'initial') {
+      cssText += 'background: initial; ';
+    }
+    if (rule.style.border == 'initial') {
+      cssText += 'border: initial; ';
+    }
+    return cssText;
   },
   replaceTextInStyles: function(styles, action) {
     if (styles && action) {
@@ -507,26 +519,27 @@ var selectorRe = /([^{]*)({[\s\S]*?})/gim,
     cssPartRe = /::part\(([^)]*)\)/gim,
     // note: :host pre-processed to -shadowcsshost.
     polyfillHost = '-shadowcsshost',
-    // note: :ancestor pre-processed to -shadowcssancestor.
-    polyfillAncestor = '-shadowcssancestor',
+    // note: :host-context pre-processed to -shadowcsshostcontext.
+    polyfillHostContext = '-shadowcsscontext',
     parenSuffix = ')(?:\\((' +
         '(?:\\([^)(]*\\)|[^)(]*)+?' +
         ')\\))?([^,{]*)';
     cssColonHostRe = new RegExp('(' + polyfillHost + parenSuffix, 'gim'),
-    cssColonAncestorRe = new RegExp('(' + polyfillAncestor + parenSuffix, 'gim'),
+    cssColonHostContextRe = new RegExp('(' + polyfillHostContext + parenSuffix, 'gim'),
     selectorReSuffix = '([>\\s~+\[.,{:][\\s\\S]*)?$',
-    hostRe = /@host/gim,
     colonHostRe = /\:host/gim,
-    colonAncestorRe = /\:ancestor/gim,
+    colonHostContextRe = /\:host-context/gim,
     /* host name without combinator */
     polyfillHostNoCombinator = polyfillHost + '-no-combinator',
     polyfillHostRe = new RegExp(polyfillHost, 'gim'),
-    polyfillAncestorRe = new RegExp(polyfillAncestor, 'gim'),
+    polyfillHostContextRe = new RegExp(polyfillHostContext, 'gim'),
     combinatorsRe = [
       /\^\^/g,
       /\^/g,
       /\/shadow\//g,
-      /\/shadow-deep\//g
+      /\/shadow-deep\//g,
+      /::shadow/g,
+      /\/deep\//g
     ];
 
 function stylesToCssText(styles, preserveComments) {

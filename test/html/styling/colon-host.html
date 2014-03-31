@@ -26,7 +26,7 @@ license that can be found in the LICENSE file.
         color: white;
       }
 
-      :ancestor(.opened:not(.animating)) div {
+      :host-context(.opened:not(.animating)) div {
         background: blue;
       }
     </style>
@@ -77,7 +77,7 @@ license that can be found in the LICENSE file.
 
   <template id="x-anchor">
     <style>
-      :host:link {
+      :host(:link) {
         font-style: italic;
       }
     </style>
@@ -101,7 +101,7 @@ license that can be found in the LICENSE file.
         padding: 20px;
       }
 
-      :host(.foo), :ancestor(.bar) {
+      :host(.foo), :host-context(.bar) {
         background: green;
         display: block;
       }
@@ -232,10 +232,10 @@ license that can be found in the LICENSE file.
 
       var zim2 = document.querySelector('x-zim2');
       var zimStyle2 = getComputedStyle(zim2);
-      chai.assert.equal(zimStyle2.borderTopColor, 'rgb(0, 0, 0)', 
-        ':host styles are not combined without <shadow> (borderTopColor)');
-      chai.assert.equal(zimStyle2.borderBottomColor, 'rgb(0, 0, 0)', 
-        ':host styles are not combined without <shadow> (borderBottomColor)');
+      chai.assert.equal(zimStyle2.borderTopColor, 'rgb(255, 165, 0)', 
+        ':host styles are combined without <shadow> (borderTopColor)');
+      chai.assert.equal(zimStyle2.borderBottomColor, 'rgb(255, 165, 0)', 
+        ':host styles are combined without <shadow> (borderBottomColor)');
       chai.assert.equal(zimStyle2.paddingTop, '20px',
         ':host styles are loaded via external sheet in import (paddingTop)');
       chai.assert.equal(zimStyle2.paddingLeft, '20px',
