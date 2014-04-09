@@ -85,7 +85,7 @@ function resolveRelativeUrl(baseUrl, url) {
 }
 
 function makeDocumentRelPath(url) {
-  var root = document.baseURI;
+  var root = document.location;
   var u = new URL(url, root);
   if (u.host === root.host && u.port === root.port &&
       u.protocol === root.protocol) {

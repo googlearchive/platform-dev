@@ -23,6 +23,7 @@ htmlSuite('integration', function() {
 });
 
 htmlSuite('URL Loader', function() {
+  htmlTest('html/url.html');
   htmlTest('html/loader-deduplicate.html');
 });
 

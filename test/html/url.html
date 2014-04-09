@@ -1,0 +1,27 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>URL integration test</title>
+  <script src="../../../tools/test/htmltest.js"></script>
+  <script src="../../../tools/test/chai/chai.js"></script>
+  <script src="../../platform.js"></script>
+</head>
+<body>
+  <script>
+    var root = document.location;
+    var path = '/foo/bar';
+    var u = new URL(path, root);
+    chai.assert.equal(u.host, root.host);
+    chai.assert.equal(u.port, root.port);
+    chai.assert.equal(u.protocol, root.protocol);
+    chai.assert.equal(u.pathname, path);
+    done();
+  </script>
+</body>
+</html>
