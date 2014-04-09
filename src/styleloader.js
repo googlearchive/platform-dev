@@ -40,7 +40,7 @@ StyleResolver.prototype = {
       // resolve any css text to be relative to the importer
       intermediate = urlResolver.resolveCssText(map[url], url);
       // flatten intermediate @imports
-      intermediate = this.flatten(intermediate, url, map);
+      intermediate = this.flatten(intermediate, base, map);
       text = text.replace(match.matched, intermediate);
     }
     return text;
