@@ -70,7 +70,7 @@ module.exports = function(grunt) {
             '../TemplateBinding',
             '../WeakMap',
             '../observe-js',
-            '../platform',
+            '../platform-dev',
             '../polymer-expressions'
           ]
         },
