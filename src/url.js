@@ -58,8 +58,13 @@ var urlResolver = {
       var attr = node.attributes[v];
       if (attr && attr.value &&
          (attr.value.search(URL_TEMPLATE_SEARCH) < 0)) {
-        var urlPath = resolveRelativeUrl(url, attr.value);
-        attr.value = urlPath;
+        var replacement;
+        if (v === 'style') {
+          replacement = replaceUrlsInCssText(attr.value, url, CSS_URL_REGEXP);
+        } else {
+          replacement = resolveRelativeUrl(url, attr.value);
+        }
+        attr.value = replacement;
       }
     });
   }
@@ -67,7 +72,7 @@ var urlResolver = {
 
 var CSS_URL_REGEXP = /(url\()([^)]*)(\))/g;
 var CSS_IMPORT_REGEXP = /(@import[\s]+(?!url\())([^;]*)(;)/g;
-var URL_ATTRS = ['href', 'src', 'action'];
+var URL_ATTRS = ['href', 'src', 'action', 'style'];
 var URL_ATTRS_SELECTOR = '[' + URL_ATTRS.join('],[') + ']';
 var URL_TEMPLATE_SEARCH = '{{.*}}';
 
