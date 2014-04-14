@@ -56,13 +56,13 @@ var urlResolver = {
     url = url || node.ownerDocument.baseURI;
     URL_ATTRS.forEach(function(v) {
       var attr = node.attributes[v];
-      if (attr && attr.value &&
-         (attr.value.search(URL_TEMPLATE_SEARCH) < 0)) {
-        var replacement;
+      var value = attr && attr.value;
+      var replacement;
+      if (value && value.search(URL_TEMPLATE_SEARCH) < 0) {
         if (v === 'style') {
-          replacement = replaceUrlsInCssText(attr.value, url, CSS_URL_REGEXP);
+          replacement = replaceUrlsInCssText(value, url, CSS_URL_REGEXP);
         } else {
-          replacement = resolveRelativeUrl(url, attr.value);
+          replacement = resolveRelativeUrl(url, value);
         }
         attr.value = replacement;
       }
