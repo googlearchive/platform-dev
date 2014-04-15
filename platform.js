@@ -64,9 +64,7 @@ function processFlags(flags) {
         'src/loader.js',
         'src/styleloader.js',
 
-        // TODO(sjmiles): pointergestures.js loads pointerevents, but
-        // the build.json does not
-        '../PointerGestures/pointergestures.js',
+        '../polymer-gestures/polymer-gestures.js',
 
         // TODO(sjmiles): polymer-expressions.js does not load dependencies, but
         // the build.json does
