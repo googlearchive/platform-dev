@@ -417,19 +417,35 @@ var ShadowCSS = {
       if (this.selectorNeedsScoping(p, scopeSelector)) {
         p = (strict && !p.match(polyfillHostNoCombinator)) ? 
             this.applyStrictSelectorScope(p, scopeSelector) :
-            this.applySimpleSelectorScope(p, scopeSelector);
+            this.applySelectorScope(p, scopeSelector);
       }
       r.push(p);
     }, this);
     return r.join(', ');
   },
   selectorNeedsScoping: function(selector, scopeSelector) {
+    if (Array.isArray(scopeSelector)) {
+      return true;
+    }
     var re = this.makeScopeMatcher(scopeSelector);
     return !selector.match(re);
   },
   makeScopeMatcher: function(scopeSelector) {
     scopeSelector = scopeSelector.replace(/\[/g, '\\[').replace(/\[/g, '\\]');
     return new RegExp('^(' + scopeSelector + ')' + selectorReSuffix, 'm');
+  },
+  applySelectorScope: function(selector, selectorScope) {
+    return Array.isArray(selectorScope) ?
+        this.applySelectorScopeList(selector, selectorScope) :
+        this.applySimpleSelectorScope(selector, selectorScope);
+  },
+  // apply an array of selectors
+  applySelectorScopeList: function(selector, scopeSelectorList) {
+    var r = [];
+    for (var i=0, s; (s=scopeSelectorList[i]); i++) {
+      r.push(this.applySimpleSelectorScope(selector, s));
+    }
+    return r.join(', ');
   },
   // scope via name and [is=name]
   applySimpleSelectorScope: function(selector, scopeSelector) {
