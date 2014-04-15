@@ -128,7 +128,7 @@ module.exports = function(grunt) {
     grunt.option('force', false);
   });
 
-  grunt.registerTask('minify', ['concat_sourcemap', 'version', 'uglify', 'sourcemap_copy:build/platform.concat.js.map:build/platform.js.map']);
+  grunt.registerTask('minify', ['concat_sourcemap', 'version', 'uglify:Platform', 'sourcemap_copy:build/platform.concat.js.map:build/platform.js.map']);
   grunt.registerTask('default', ['minify']);
   grunt.registerTask('docs', ['yuidoc']);
   grunt.registerTask('test', ['override-chrome-launcher', 'karma:platform']);
