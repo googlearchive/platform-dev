@@ -1,4 +1,5 @@
 [
+  "build/boot.js",
   "src/patches-shadowdom-native.js",
 
   "src/lang.js",
