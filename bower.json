@@ -14,7 +14,7 @@
   "dependencies": {
     "CustomElements": "Polymer/CustomElements#master",
     "HTMLImports": "Polymer/HTMLImports#master",
-    "PointerGestures":"Polymer/PointerGestures#master",
+    "polymer-gestures":"Polymer/polymer-gestures#master",
     "ShadowDOM": "Polymer/ShadowDOM#master",
     "polymer-expressions": "Polymer/polymer-expressions#master",
     "tools": "Polymer/tools#master",
