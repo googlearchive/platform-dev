@@ -75,13 +75,11 @@ module.exports = function(grunt) {
             '../CustomElements',
             '../HTMLImports',
             '../NodeBind',
-            '../polymer-gestures',
             '../ShadowDOM',
             '../TemplateBinding',
             '../WeakMap',
             '../observe-js',
-            '../platform-dev',
-            '../polymer-expressions'
+            '../platform-dev'
           ]
         },
         files: {
