@@ -85,6 +85,10 @@ function replaceUrlsInCssText(cssText, baseUrl, regexp) {
 }
 
 function resolveRelativeUrl(baseUrl, url) {
+  // do not resolve '/' absolute urls
+  if (url && url[0] === '/') {
+    return url;
+  }
   var u = new URL(url, baseUrl);
   return makeDocumentRelPath(u.href);
 }

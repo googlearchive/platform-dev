@@ -13,14 +13,20 @@ license that can be found in the LICENSE file.
   <script src="../../platform.js"></script>
 </head>
 <body>
+  <template>
+    <b id="a" href="/1/2"></b>
+    <b id="b" href="2/../3/4"></b>
+    <b id="c" href="{{ path }}/baz"></b>
+  </template>
   <script>
-    var root = document.location;
-    var path = '/foo/bar';
-    var u = new URL(path, root);
-    chai.assert.equal(u.host, root.host);
-    chai.assert.equal(u.port, root.port);
-    chai.assert.equal(u.protocol, root.protocol);
-    chai.assert.equal(u.pathname, path);
+    function getUrl(template, id, attr) {
+      return template.content.querySelector('#' + id).getAttribute(attr);
+    }
+    var t = document.querySelector('template');
+    Platform.urlResolver.resolveTemplate(t);
+    chai.assert.equal(getUrl(t, 'a', 'href'), '/1/2');
+    chai.assert.equal(getUrl(t, 'b', 'href'), '3/4');
+    chai.assert.equal(getUrl(t, 'c', 'href'), '{{ path }}/baz');
     done();
   </script>
 </body>
