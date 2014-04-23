@@ -3,19 +3,13 @@
  * Use of this source code is governed by a BSD-style
  * license that can be found in the LICENSE file.
  */
-(function() {
-
-  // poor man's adapter for template.content on various platform scenarios
-  window.templateContent = window.templateContent || function(inTemplate) {
-    return inTemplate.content;
-  };
+(function(scope) {
 
   // so we can call wrap/unwrap without testing for ShadowDOMPolyfill
-
   window.wrap = window.unwrap = function(n){
     return n;
   }
-  
+
   addEventListener('DOMContentLoaded', function() {
     if (CustomElements.useNative === false) {
       var originalCreateShadowRoot = Element.prototype.createShadowRoot;
@@ -26,8 +20,8 @@
       };
     }
   });
-  
-  window.templateContent = function(inTemplate) {
+
+  Platform.templateContent = function(inTemplate) {
     // if MDV exists, it may need to boostrap this template to reveal content
     if (window.HTMLTemplateElement && HTMLTemplateElement.bootstrap) {
       HTMLTemplateElement.bootstrap(inTemplate);
@@ -44,4 +38,4 @@
     return inTemplate.content || inTemplate._content;
   };
 
-})();
+})(window.Platform);

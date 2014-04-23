@@ -15,7 +15,7 @@ Polymer = {
           var template = inElement.querySelector('template');
           if (template) {
             var root = this.webkitCreateShadowRoot();
-            root.appendChild(templateContent(template).cloneNode(true));
+            root.appendChild(Platform.templateContent(template).cloneNode(true));
           }
           this.created();
         }

@@ -29,7 +29,7 @@ license that can be found in the LICENSE file.
       lifecycle: {
         readyCallback: function() {
           var root = this.webkitCreateShadowRoot();
-          root.appendChild(templateContent(template));
+          root.appendChild(Platform.templateContent(template));
           this.orangify();
         }
       }

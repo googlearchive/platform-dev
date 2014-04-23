@@ -12,7 +12,7 @@ Polymer = {
       var template = inElement.querySelector('template');
       if (template) {
         var root = this.createShadowRoot();
-        root.appendChild(templateContent(template).cloneNode(true));
+        root.appendChild(Platform.templateContent(template).cloneNode(true));
       }
       inPrototype.created.call(this);
     };

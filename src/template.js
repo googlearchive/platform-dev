@@ -5,6 +5,8 @@
  */
 
 // poor man's adapter for template.content on various platform scenarios
-window.templateContent = window.templateContent || function(inTemplate) {
-  return inTemplate.content;
-};
+(function(scope) {
+  scope.templateContent = scope.templateContent || function(inTemplate) {
+    return inTemplate.content;
+  };
+})(window.Platform);
