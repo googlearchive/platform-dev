@@ -21,9 +21,8 @@ StyleResolver.prototype = {
     this.loader.process(text, url, done);
   },
   // resolve the textContent of a style node
-  resolveNode: function(style, callback) {
+  resolveNode: function(style, url, callback) {
     var text = style.textContent;
-    var url = style.ownerDocument.baseURI;
     var done = function(text) {
       style.textContent = text;
       callback(style);
@@ -37,15 +36,15 @@ StyleResolver.prototype = {
     for (var i = 0; i < matches.length; i++) {
       match = matches[i];
       url = match.url;
-      // resolve any css text to be relative to the importer
-      intermediate = urlResolver.resolveCssText(map[url], url);
+      // resolve any css text to be relative to the importer, keep absolute url
+      intermediate = urlResolver.resolveCssText(map[url], url, true);
       // flatten intermediate @imports
       intermediate = this.flatten(intermediate, base, map);
       text = text.replace(match.matched, intermediate);
     }
     return text;
   },
-  loadStyles: function(styles, callback) {
+  loadStyles: function(styles, base, callback) {
     var loaded=0, l = styles.length;
     // called in the context of the style
     function loadedStyle(style) {
@@ -55,7 +54,7 @@ StyleResolver.prototype = {
       }
     }
     for (var i=0, s; (i<l) && (s=styles[i]); i++) {
-      this.resolveNode(s, loadedStyle);
+      this.resolveNode(s, base, loadedStyle);
     }
   }
 };

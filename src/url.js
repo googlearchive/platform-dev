@@ -36,9 +36,9 @@ var urlResolver = {
     url = url || style.ownerDocument.baseURI;
     style.textContent = this.resolveCssText(style.textContent, url);
   },
-  resolveCssText: function(cssText, baseUrl) {
-    cssText = replaceUrlsInCssText(cssText, baseUrl, CSS_URL_REGEXP);
-    return replaceUrlsInCssText(cssText, baseUrl, CSS_IMPORT_REGEXP);
+  resolveCssText: function(cssText, baseUrl, keepAbsolute) {
+    cssText = replaceUrlsInCssText(cssText, baseUrl, keepAbsolute, CSS_URL_REGEXP);
+    return replaceUrlsInCssText(cssText, baseUrl, keepAbsolute, CSS_IMPORT_REGEXP);
   },
   resolveAttributes: function(root, url) {
     if (root.hasAttributes && root.hasAttributes()) {
@@ -76,25 +76,25 @@ var URL_ATTRS = ['href', 'src', 'action', 'style'];
 var URL_ATTRS_SELECTOR = '[' + URL_ATTRS.join('],[') + ']';
 var URL_TEMPLATE_SEARCH = '{{.*}}';
 
-function replaceUrlsInCssText(cssText, baseUrl, regexp) {
+function replaceUrlsInCssText(cssText, baseUrl, keepAbsolute, regexp) {
   return cssText.replace(regexp, function(m, pre, url, post) {
     var urlPath = url.replace(/["']/g, '');
-    urlPath = resolveRelativeUrl(baseUrl, urlPath);
+    urlPath = resolveRelativeUrl(baseUrl, urlPath, keepAbsolute);
     return pre + '\'' + urlPath + '\'' + post;
   });
 }
 
-function resolveRelativeUrl(baseUrl, url) {
+function resolveRelativeUrl(baseUrl, url, keepAbsolute) {
   // do not resolve '/' absolute urls
   if (url && url[0] === '/') {
     return url;
   }
   var u = new URL(url, baseUrl);
-  return makeDocumentRelPath(u.href);
+  return keepAbsolute ? u.href : makeDocumentRelPath(u.href);
 }
 
 function makeDocumentRelPath(url) {
-  var root = document.location;
+  var root = new URL(document.baseURI);
   var u = new URL(url, root);
   if (u.host === root.host && u.port === root.port &&
       u.protocol === root.protocol) {
