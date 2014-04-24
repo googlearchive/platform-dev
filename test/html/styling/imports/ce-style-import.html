@@ -36,7 +36,7 @@ license that can be found in the LICENSE file.
       }
       var styles = t.content.querySelectorAll('style').array();
       Platform.styleResolver.loadStyles(styles, t.ownerDocument.baseURI, function() {
-        sr.appendChild(document.importNode(t.content, true));
+        sr.appendChild(t.content.cloneNode(true));
         this.dispatchEvent(new CustomEvent('custom-style-loaded', {bubbles: true}));
       });
     };
