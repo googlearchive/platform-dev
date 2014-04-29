@@ -98,14 +98,16 @@ function makeDocumentRelPath(url) {
   var u = new URL(url, root);
   if (u.host === root.host && u.port === root.port &&
       u.protocol === root.protocol) {
-    return makeRelPath(root.pathname, u.pathname);
+    return makeRelPath(root, u);
   } else {
     return url;
   }
 }
 
 // make a relative path from source to target
-function makeRelPath(source, target) {
+function makeRelPath(sourceUrl, targetUrl) {
+  var source = source.pathname;
+  var target = target.pathname;
   var s = source.split('/');
   var t = target.split('/');
   while (s.length && s[0] === t[0]){
@@ -115,7 +117,7 @@ function makeRelPath(source, target) {
   for (var i = 0, l = s.length - 1; i < l; i++) {
     t.unshift('..');
   }
-  return t.join('/');
+  return t.join('/') + targetUrl.search + targetUrl.hash;
 }
 
 // exports
