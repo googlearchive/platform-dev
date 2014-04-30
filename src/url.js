@@ -106,8 +106,8 @@ function makeDocumentRelPath(url) {
 
 // make a relative path from source to target
 function makeRelPath(sourceUrl, targetUrl) {
-  var source = source.pathname;
-  var target = target.pathname;
+  var source = sourceUrl.pathname;
+  var target = targetUrl.pathname;
   var s = source.split('/');
   var t = target.split('/');
   while (s.length && s[0] === t[0]){
