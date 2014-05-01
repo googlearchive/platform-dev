@@ -58,6 +58,7 @@ license that can be found in the LICENSE file.
           assert.instanceOf(cssRules[i], window.CSSStyleRule);
         }
         runTests(target);
+        assert.equal(Platform.styleResolver.loader.requests, 10, 'Number of stylesheet requests were not expected');
       });
     }
 

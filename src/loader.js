@@ -8,9 +8,13 @@
 
   // Generic url loader
   function Loader(regex) {
+    this.cache = Object.create(null);
+    this.map = Object.create(null);
+    this.requests = 0;
     this.regex = regex;
   }
   Loader.prototype = {
+
     // TODO(dfreedm): there may be a better factoring here
     // extract absolute urls from the text (full of relative urls)
     extractUrls: function(text, base) {
@@ -26,63 +30,78 @@
     // returns a map of absolute url to text
     process: function(text, root, callback) {
       var matches = this.extractUrls(text, root);
-      this.fetch(matches, {}, callback);
+
+      // every call to process returns all the text this loader has ever received
+      var done = callback.bind(null, this.map);
+      this.fetch(matches, done);
     },
     // build a mapping of url -> text from matches
-    fetch: function(matches, map, callback) {
+    fetch: function(matches, callback) {
       var inflight = matches.length;
 
       // return early if there is no fetching to be done
       if (!inflight) {
-        return callback(map);
+        return callback();
       }
 
+      // wait for all subrequests to return
       var done = function() {
         if (--inflight === 0) {
-          callback(map);
+          callback();
         }
       };
 
-      // map url -> responseText
-      var handleXhr = function(err, request) {
-        var match = request.match;
-        var key = match.url;
-        // handle errors with an empty string
-        if (err) {
-          map[key] = '';
-          return done();
-        }
-        var response = request.response || request.responseText;
-        map[key] = response;
-        this.fetch(this.extractUrls(response, key), map, done);
-      };
-
+      // start fetching all subrequests
       var m, req, url;
       for (var i = 0; i < inflight; i++) {
         m = matches[i];
         url = m.url;
+        req = this.cache[url];
         // if this url has already been requested, skip requesting it again
-        if (map[url]) {
-          // Async call to done to simplify the inflight logic
-          endOfMicrotask(done);
-          continue;
+        if (!req) {
+          req = this.xhr(url);
+          req.match = m;
+          this.cache[url] = req;
         }
-        req = this.xhr(url, handleXhr, this);
-        req.match = m;
-        // tag the map with an XHR request to deduplicate at the same level
-        map[url] = req;
+        // wait for the request to process its subrequests
+        req.wait(done);
       }
     },
-    xhr: function(url, callback, scope) {
+    handleXhr: function(request) {
+      var match = request.match;
+      var url = match.url;
+
+      // handle errors with an empty string
+      var response = request.response || request.responseText || '';
+      this.map[url] = response;
+      this.fetch(this.extractUrls(response, url), request.resolve);
+    },
+    xhr: function(url) {
+      this.requests++;
       var request = new XMLHttpRequest();
       request.open('GET', url, true);
       request.send();
-      request.onload = function() {
-        callback.call(scope, null, request);
+      request.onerror = request.onload = this.handleXhr.bind(this, request);
+
+      // queue of tasks to run after XHR returns
+      request.pending = [];
+      request.resolve = function() {
+        var pending = request.pending;
+        for(var i = 0; i < pending.length; i++) {
+          pending[i]();
+        }
+        request.pending = null;
       };
-      request.onerror = function() {
-        callback.call(scope, null, request);
+
+      // if we have already resolved, pending is null, async call the callback
+      request.wait = function(fn) {
+        if (request.pending) {
+          request.pending.push(fn);
+        } else {
+          endOfMicroTask(fn);
+        }
       };
+
       return request;
     }
   };
