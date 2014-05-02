@@ -98,7 +98,7 @@
         if (request.pending) {
           request.pending.push(fn);
         } else {
-          endOfMicroTask(fn);
+          endOfMicrotask(fn);
         }
       };
 
