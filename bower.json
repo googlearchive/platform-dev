@@ -12,12 +12,12 @@
     "components"
   ],
   "dependencies": {
-    "CustomElements": "Polymer/CustomElements#master",
-    "HTMLImports": "Polymer/HTMLImports#master",
-    "ShadowDOM": "Polymer/ShadowDOM#master",
-    "TemplateBinding": "Polymer/TemplateBinding#master",
-    "tools": "Polymer/tools#master",
-    "URL": "Polymer/URL#master"
+    "CustomElements": "Polymer/CustomElements#0.2.4",
+    "HTMLImports": "Polymer/HTMLImports#0.2.4",
+    "ShadowDOM": "Polymer/ShadowDOM#0.2.4",
+    "TemplateBinding": "Polymer/TemplateBinding#0.2.4",
+    "tools": "Polymer/tools#0.2.4",
+    "URL": "Polymer/URL#0.2.4"
   },
   "license": "BSD",
   "private": true,
@@ -27,5 +27,6 @@
     "bower_components",
     "test",
     "tests"
-  ]
+  ],
+  "version": "0.2.4"
 }
