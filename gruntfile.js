@@ -138,5 +138,10 @@ module.exports = function(grunt) {
   grunt.registerTask('test-buildbot', ['override-chrome-launcher', 'karma:buildbot', 'test-build-cr']);
   grunt.registerTask('build-lite', ['concat:lite']);
   grunt.registerTask('build-native', ['version', 'uglify:nativeOnly']);
+  grunt.registerTask('release', function() {
+    grunt.option('release', true);
+    grunt.task.run('minify');
+    grunt.task.run('audit');
+  });
 };
 
