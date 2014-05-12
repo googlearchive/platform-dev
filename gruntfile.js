@@ -45,6 +45,9 @@ module.exports = function(grunt) {
         nonull: true,
         compress: {
           unsafe: false
+        },
+        beautify: {
+          ascii_only: true
         }
       },
       Platform: {
