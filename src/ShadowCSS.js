@@ -735,6 +735,7 @@ if (window.ShadowDOMPolyfill) {
         }
         style.__importParsed = true;
         this.markParsingComplete(elt);
+        this.parseNext();
       }
 
       var hasResource = HTMLImports.parser.hasResource;
