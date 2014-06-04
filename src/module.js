@@ -26,9 +26,11 @@
         module = null;
         break;
       case 2:
+        // dependsOrFactory is `factory` in this case
         module = dependsOrFactory.apply(this);
         break;
       default:
+        // dependsOrFactory is `depends` in this case
         module = withDependencies(moduleFactory, dependsOrFactory);
         break;
     }
@@ -50,7 +52,8 @@
   // exports
 
   scope.marshal = marshal;
-  scope.module = module;
+  // `module` confuses commonjs detectors
+  scope.modularize = module;
   scope.using = using;
 
 })(window);
