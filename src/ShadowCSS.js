@@ -398,7 +398,7 @@ var ShadowCSS = {
     var cssText = '';
     if (cssRules) {
       Array.prototype.forEach.call(cssRules, function(rule) {
-        if (rule.selectorText && (rule.style && rule.style.cssText)) {
+        if (rule.selectorText && (rule.style && rule.style.cssText !== undefined)) {
           cssText += this.scopeSelector(rule.selectorText, scopeSelector, 
             this.strictStyling) + ' {\n\t';
           cssText += this.propertiesFromRule(rule) + '\n}\n\n';
