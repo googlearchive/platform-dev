@@ -406,8 +406,23 @@ var ShadowCSS = {
           cssText += '@media ' + rule.media.mediaText + ' {\n';
           cssText += this.scopeRules(rule.cssRules, scopeSelector);
           cssText += '\n}\n\n';
-        } else if (rule.cssText) {
-          cssText += rule.cssText + '\n\n';
+        } else {
+          // TODO(sjmiles): KEYFRAMES_RULE in IE11 throws when we query cssText
+          // 'cssText' in rule returns true, but rule.cssText throws anyway
+          // We can test the rule type, e.g.
+          //   else if (rule.type !== CSSRule.KEYFRAMES_RULE && rule.cssText) {
+          // but this will prevent cssText propagation in other browsers which
+          // support it.
+          // KEYFRAMES_RULE has a CSSRuleSet, so the text can probably be reconstructed
+          // from that collection; this would be a proper fix.
+          // For now, I'm trapping the exception so IE11 is unblocked in other areas.
+          try {
+            if (rule.cssText) {
+              cssText += rule.cssText + '\n\n';
+            }
+          } catch(x) {
+            // squelch
+          }
         }
       }, this);
     }
