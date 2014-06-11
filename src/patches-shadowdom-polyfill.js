@@ -7,7 +7,7 @@
  * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
  */
 
-(function() {
+(function(scope) {
 
   // convenient global
   window.wrap = ShadowDOMPolyfill.wrapIfNeeded;
@@ -40,4 +40,60 @@
   };
 
   Element.prototype.webkitCreateShadowRoot = Element.prototype.createShadowRoot;
-})();
+
+  function queryShadow(node, selector) {
+    var m, el = node.firstElementChild;
+    var shadows, sr, i;
+    while(el) {
+      shadows = [];
+      sr = el.shadowRoot;
+      while(sr) {
+        shadows.push(sr);
+        sr = sr.olderShadowRoot;
+      }
+      for(i = shadows.length - 1; i >= 0; i--) {
+        m = shadows[i].querySelector(selector);
+        if (m) {
+          return m;
+        }
+      }
+      m = queryShadow(el, selector);
+      if (m) {
+        return m;
+      }
+      el = el.nextElementSibling;
+    }
+    return null;
+  }
+
+  function queryAllShadows(node, selector, results) {
+    var el = node.firstElementChild;
+    var temp, sr, shadows, i, j;
+    while (el) {
+      shadows = [];
+      sr = el.shadowRoot;
+      while(sr) {
+        shadows.push(sr);
+        sr = sr.olderShadowRoot;
+      }
+      for (i = shadows.length - 1; i >= 0; i--) {
+        temp = shadows[i].querySelectorAll(selector);
+        for(j = 0; j < temp.length; j++) {
+          results.push(temp[j]);
+        }
+      }
+      queryAllShadows(el, selector, results);
+      el = el.nextElementSibling;
+    }
+    return results;
+  }
+
+  console.log(scope);
+  scope.queryAllShadows = function(node, selector, all) {
+    if (all) {
+      return queryAllShadows(node, selector, []);
+    } else {
+      return queryShadow(node, selector);
+    }
+  };
+})(window.Platform);
