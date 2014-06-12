@@ -44,19 +44,19 @@
   function queryShadow(node, selector) {
     var m, el = node.firstElementChild;
     var shadows, sr, i;
+    shadows = [];
+    sr = node.shadowRoot;
+    while(sr) {
+      shadows.push(sr);
+      sr = sr.olderShadowRoot;
+    }
+    for(i = shadows.length - 1; i >= 0; i--) {
+      m = shadows[i].querySelector(selector);
+      if (m) {
+        return m;
+      }
+    }
     while(el) {
-      shadows = [];
-      sr = el.shadowRoot;
-      while(sr) {
-        shadows.push(sr);
-        sr = sr.olderShadowRoot;
-      }
-      for(i = shadows.length - 1; i >= 0; i--) {
-        m = shadows[i].querySelector(selector);
-        if (m) {
-          return m;
-        }
-      }
       m = queryShadow(el, selector);
       if (m) {
         return m;
@@ -69,26 +69,25 @@
   function queryAllShadows(node, selector, results) {
     var el = node.firstElementChild;
     var temp, sr, shadows, i, j;
+    shadows = [];
+    sr = node.shadowRoot;
+    while(sr) {
+      shadows.push(sr);
+      sr = sr.olderShadowRoot;
+    }
+    for (i = shadows.length - 1; i >= 0; i--) {
+      temp = shadows[i].querySelectorAll(selector);
+      for(j = 0; j < temp.length; j++) {
+        results.push(temp[j]);
+      }
+    }
     while (el) {
-      shadows = [];
-      sr = el.shadowRoot;
-      while(sr) {
-        shadows.push(sr);
-        sr = sr.olderShadowRoot;
-      }
-      for (i = shadows.length - 1; i >= 0; i--) {
-        temp = shadows[i].querySelectorAll(selector);
-        for(j = 0; j < temp.length; j++) {
-          results.push(temp[j]);
-        }
-      }
       queryAllShadows(el, selector, results);
       el = el.nextElementSibling;
     }
     return results;
   }
 
-  console.log(scope);
   scope.queryAllShadows = function(node, selector, all) {
     if (all) {
       return queryAllShadows(node, selector, []);
