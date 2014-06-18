@@ -75,7 +75,7 @@ var urlResolver = {
 
 var CSS_URL_REGEXP = /(url\()([^)]*)(\))/g;
 var CSS_IMPORT_REGEXP = /(@import[\s]+(?!url\())([^;]*)(;)/g;
-var URL_ATTRS = ['href', 'src', 'action', 'style'];
+var URL_ATTRS = ['href', 'src', 'action', 'style', 'url'];
 var URL_ATTRS_SELECTOR = '[' + URL_ATTRS.join('],[') + ']';
 var URL_TEMPLATE_SEARCH = '{{.*}}';
 
