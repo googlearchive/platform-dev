@@ -63,7 +63,7 @@ var urlResolver = {
       var replacement;
       if (value && value.search(URL_TEMPLATE_SEARCH) < 0) {
         if (v === 'style') {
-          replacement = replaceUrlsInCssText(value, url, CSS_URL_REGEXP);
+          replacement = replaceUrlsInCssText(value, url, false, CSS_URL_REGEXP);
         } else {
           replacement = resolveRelativeUrl(url, value);
         }
