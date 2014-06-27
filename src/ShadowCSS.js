@@ -292,7 +292,7 @@ var ShadowCSS = {
     cssText = this.insertPolyfillHostInCssText(cssText);
     cssText = this.convertColonHost(cssText);
     cssText = this.convertColonHostContext(cssText);
-    cssText = this.convertCombinators(cssText);
+    cssText = this.convertShadowDOMSelectors(cssText);
     if (scopeSelector) {
       var self = this, cssText;
       withCssRules(cssText, function(rules) {
@@ -385,11 +385,12 @@ var ShadowCSS = {
     return host + part.replace(polyfillHost, '') + suffix;
   },
   /*
-   * Convert ^ and ^^ combinators by replacing with space.
+   * Convert combinators like ::shadow and pseudo-elements like ::content
+   * by replacing with space.
   */
-  convertCombinators: function(cssText) {
-    for (var i=0; i < combinatorsRe.length; i++) {
-      cssText = cssText.replace(combinatorsRe[i], ' ');
+  convertShadowDOMSelectors: function(cssText) {
+    for (var i=0; i < shadowDOMSelectorsRe.length; i++) {
+      cssText = cssText.replace(shadowDOMSelectorsRe[i], ' ');
     }
     return cssText;
   },
@@ -569,13 +570,14 @@ var selectorRe = /([^{]*)({[\s\S]*?})/gim,
     polyfillHostNoCombinator = polyfillHost + '-no-combinator',
     polyfillHostRe = new RegExp(polyfillHost, 'gim'),
     polyfillHostContextRe = new RegExp(polyfillHostContext, 'gim'),
-    combinatorsRe = [
+    shadowDOMSelectorsRe = [
       /\^\^/g,
       /\^/g,
       /\/shadow\//g,
       /\/shadow-deep\//g,
       /::shadow/g,
-      /\/deep\//g
+      /\/deep\//g,
+      /::content/g
     ];
 
 function stylesToCssText(styles, preserveComments) {

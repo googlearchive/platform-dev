@@ -23,6 +23,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <x-bar>
     <div>Green?</div>
   </x-bar>
+
+  <x-auto>
+    <div class="one">Green?</div>
+    <div class="two">Red?</div>
+  </x-auto>
  
   <template id="x-foo">
     <style>
@@ -45,11 +50,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <content></content>
   </template>
 
+  <template id="x-auto">
+    <style>
+      .wrapper-one ::content > * {
+        background: green;
+      }
+
+      .wrapper-two ::content > * {
+        background: red;
+      }
+    </style>
+    <div class="wrapper-one">
+      <content select=".one"></content>
+    </div>
+    <div class="wrapper-two">
+      <content select=".two"></content>
+    </div>
+  </template>
+
 
   
   <script>
     XFoo = register('x-foo', '', HTMLElement.prototype);
     XBar = register('x-bar', 'x-foo', HTMLElement.prototype);
+    XAuto = register('x-auto', '', HTMLElement.prototype);
     
     function test(selector) {
       var n = document.querySelector(selector);
@@ -64,6 +88,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       setTimeout(function() {
         test('x-foo');
         test('x-bar');
+        var auto = document.querySelector('x-auto');
+        chai.assert.equal(getComputedStyle(auto.firstElementChild).backgroundColor, 
+        'rgb(0, 128, 0)', 'auto-replaced ::content styles applied');
+        chai.assert.equal(getComputedStyle(auto.lastElementChild).backgroundColor, 
+        'rgb(255, 0, 0)', 'auto-replaced ::content styles applied');
         done();
       });
     });
