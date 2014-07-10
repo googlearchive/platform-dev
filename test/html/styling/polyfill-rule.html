@@ -27,6 +27,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         background: red;
       }
 
+      polyfill-rule {
+        content: ".zonk";
+        padding: 10px;
+      }
+
       /* @polyfill-rule :host > .zonk {
         color: blue;
       }*/
@@ -35,6 +40,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         content: '.unscoped';
         background: black;
         color: white;
+      }
+
+      polyfill-unscoped-rule {
+        content: ".unscoped";
+        padding: 20px;
       }
     </style>
     <content></content>
@@ -45,15 +55,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     
     document.addEventListener('WebComponentsReady', function() {
       var foo = document.querySelector('x-foo');
-      fooDiv = foo.firstElementChild;
-      var divComputed = getComputedStyle(fooDiv);
-      chai.assert.equal(divComputed.backgroundColor, 
-        'rgb(255, 0, 0)', 'content polyfill styles are applied');
-      chai.assert.equal(divComputed.color, 
-        'rgb(0, 0, 255)', '@polyfill styles are applied');
-      var unscoped = document.querySelector('.unscoped');
-      chai.assert.equal(getComputedStyle(unscoped).backgroundColor, 
-        'rgb(0, 0, 0)', '@polyfill-unscoped-rule styles are applied');
+      var zonkStyle = getComputedStyle(foo.querySelector('.zonk'));
+      chai.assert.equal(zonkStyle.backgroundColor, 
+        'rgb(255, 0, 0)', 'polyfill-rule, single quote');
+      chai.assert.equal(zonkStyle.padding, 
+        '10px', 'polyfill-rule, double quote');
+      chai.assert.equal(zonkStyle.color, 
+        'rgb(0, 0, 255)', '@polyfill-rule');
+      var unscopedStyle = getComputedStyle(document.querySelector('.unscoped'));
+      chai.assert.equal(unscopedStyle.backgroundColor, 
+        'rgb(0, 0, 0)', 'polyfill-unscoped-rule single quote');
+      chai.assert.equal(unscopedStyle.padding, 
+        '20px', 'polyfill-unscoped-rule double quote');
       done();
     });
   </script>
