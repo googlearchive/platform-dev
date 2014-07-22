@@ -545,13 +545,13 @@ var selectorRe = /([^{]*)({[\s\S]*?})/gim,
     cssCommentRe = /\/\*[^*]*\*+([^/*][^*]*\*+)*\//gim,
     // TODO(sorvell): remove either content or comment
     cssCommentNextSelectorRe = /\/\*\s*@polyfill ([^*]*\*+([^/*][^*]*\*+)*\/)([^{]*?){/gim,
-    cssContentNextSelectorRe = /polyfill-next-selector[^}]*content\:[\s]*['|"]([^'"]*)['|"][^}]*}([^{]*?){/gim,
+    cssContentNextSelectorRe = /polyfill-next-selector[^}]*content\:[\s]*['"](.*?)['"];[^}]*}([^{]*?){/gim,  
     // TODO(sorvell): remove either content or comment
     cssCommentRuleRe = /\/\*\s@polyfill-rule([^*]*\*+([^/*][^*]*\*+)*)\//gim,
-    cssContentRuleRe = /(polyfill-rule)[^}]*(content\:[\s]*['|"]([^'"]*)['|"][^;]*;)[^}]*}/gim,
+    cssContentRuleRe = /(polyfill-rule)[^}]*(content\:[\s]*['"](.*?)['"];)[^}]*}/gim,
     // TODO(sorvell): remove either content or comment
     cssCommentUnscopedRuleRe = /\/\*\s@polyfill-unscoped-rule([^*]*\*+([^/*][^*]*\*+)*)\//gim,
-    cssContentUnscopedRuleRe = /(polyfill-unscoped-rule)[^}]*(content\:[\s]*['|"]([^'"]*)['|"][^;]*;)[^}]*}/gim,
+    cssContentUnscopedRuleRe = /(polyfill-unscoped-rule)[^}]*(content\:[\s]*['"](.*?)['"];)[^}]*}/gim,
     cssPseudoRe = /::(x-[^\s{,(]*)/gim,
     cssPartRe = /::part\(([^)]*)\)/gim,
     // note: :host pre-processed to -shadowcsshost.

@@ -16,14 +16,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script src="../../../../tools/test/chai/chai.js"></script>
 </head>
 <body>
-  <x-foo>
+  <x-foo foo>
     <div>Green?</div>
-    <section>Orange?</section>
+    <section orange="true">Orange?</section>
   </x-foo>
 
-  <x-bar>
+  <x-bar foo>
     <div>Green?</div>
-    <section>Orange?</section>
+    <section orange="true">Orange?</section>
   </x-bar>
 
   <x-auto>
@@ -38,14 +38,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         border: 1px solid black;
       }
 
+      polyfill-next-selector {
+        content: ':host([foo=""])';
+      }
+      :host([foo=""]) {
+        padding: 10px;
+      }
+
       polyfill-next-selector { content: ':host > div'; }
       ::content > div {
         background: green;
       }
 
-      polyfill-next-selector { content: "section"; }
+      polyfill-next-selector { content: "section[orange='true']"; }
       ::content > section {
         background: orange;
+      }
+
+      polyfill-next-selector { content: 'section[orange="true"]'; }
+      ::content > section {
+        padding: 10px;
       }
 
       /*@polyfill :host > * */
@@ -86,6 +98,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       setTimeout(function() {
         // x-foo
         var n = document.querySelector('x-foo');
+        var fooStyle = getComputedStyle(n);
+        chai.assert.equal(fooStyle.paddingTop, '10px', 'host attribute style correct');
         var divStyle = getComputedStyle(n.firstElementChild);
         chai.assert.equal(divStyle.backgroundColor, 
           'rgb(0, 128, 0)', 'single quote polyfill-next-selector');
@@ -94,6 +108,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var sectionStyle = getComputedStyle(n.lastElementChild);
         chai.assert.equal(sectionStyle.backgroundColor, 
           'rgb(255, 165, 0)', 'double quote polyfill-next-selector');
+        chai.assert.equal(sectionStyle.paddingTop, 
+          '10px', 'double quote polyfill-next-selector');
         chai.assert.equal(sectionStyle.color, 
           'rgb(255, 0, 0)', '@polyfill');
         //

@@ -58,14 +58,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var zonkStyle = getComputedStyle(foo.querySelector('.zonk'));
       chai.assert.equal(zonkStyle.backgroundColor, 
         'rgb(255, 0, 0)', 'polyfill-rule, single quote');
-      chai.assert.equal(zonkStyle.padding, 
+      chai.assert.equal(zonkStyle.paddingTop, 
         '10px', 'polyfill-rule, double quote');
       chai.assert.equal(zonkStyle.color, 
         'rgb(0, 0, 255)', '@polyfill-rule');
       var unscopedStyle = getComputedStyle(document.querySelector('.unscoped'));
       chai.assert.equal(unscopedStyle.backgroundColor, 
         'rgb(0, 0, 0)', 'polyfill-unscoped-rule single quote');
-      chai.assert.equal(unscopedStyle.padding, 
+      chai.assert.equal(unscopedStyle.paddingTop, 
         '20px', 'polyfill-unscoped-rule double quote');
       done();
     });
