@@ -747,7 +747,7 @@ if (window.ShadowDOMPolyfill) {
           if (elt.parentNode === head) {
             head.replaceChild(style, elt);
           } else {
-            head.appendChild(style);
+            this.addElementToDocument(style);
           }
         }
         style.__importParsed = true;
