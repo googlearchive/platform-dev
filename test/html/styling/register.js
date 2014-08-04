@@ -26,7 +26,7 @@
               n = names[i];
               var template = templateForName(n);
               if (template) {
-                this.createShadowRoot().appendChild(template.content.cloneNode(true));
+                this.createShadowRoot().appendChild(document.importNode(template.content, true));
               }
             }
           }
