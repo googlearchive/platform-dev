@@ -651,7 +651,7 @@ function withCssRules(cssText, callback) {
     var style = cssTextToStyle(cssText);
     inFrame(function(doc) {
       doc.head.appendChild(style.impl);
-      rules = style.sheet.cssRules;
+      rules = Array.prototype.slice.call(style.sheet.cssRules, 0);
       callback(rules);
     });
   } else {
@@ -732,11 +732,10 @@ if (window.ShadowDOMPolyfill) {
         }
         if (elt.__resource) {
           style = elt.ownerDocument.createElement('style');
-          style.textContent = urlResolver.resolveCssText(
-              elt.__resource, elt.href);
-        } else {
-          urlResolver.resolveStyle(style);  
+          style.textContent = elt.__resource;
         }
+        // relay on HTMLImports for path fixup
+        HTMLImports.path.resolveUrlsInStyle(style);
         style.textContent = ShadowCSS.shimStyle(style);
         style.removeAttribute(SHIM_ATTRIBUTE, '');
         style.setAttribute(SHIMMED_ATTRIBUTE, '');
