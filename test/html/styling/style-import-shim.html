@@ -30,7 +30,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         var XProto = Object.create(HTMLButtonElement.prototype);
         XProto.createdCallback = function() {
-            this.appendChild(t.createInstance({}));
+            this.appendChild(t.content.cloneNode(true));
         };
 
         document.registerElement('x-div', {
