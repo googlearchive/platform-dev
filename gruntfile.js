@@ -61,14 +61,6 @@ module.exports = function(grunt) {
         files: {
           'build/platform.js': 'build/platform.concat.js'
         }
-      },
-      nativeOnly: {
-        options: {
-          banner: grunt.file.read('banner.txt') + '//@version <%= buildversion %>\n'
-        },
-        files: {
-          'build/platform.native.js': readManifest('build-native.json')
-        }
       }
     },
     audit: {
@@ -77,11 +69,7 @@ module.exports = function(grunt) {
           repos: [
             '../CustomElements',
             '../HTMLImports',
-            '../NodeBind',
             '../ShadowDOM',
-            '../TemplateBinding',
-            '../WeakMap',
-            '../observe-js',
             '../platform-dev'
           ]
         },
@@ -137,7 +125,6 @@ module.exports = function(grunt) {
   grunt.registerTask('test-build-cr', ['minify', 'stash', 'karma:buildbot', 'restore']);
   grunt.registerTask('test-buildbot', ['override-chrome-launcher', 'karma:buildbot', 'test-build-cr']);
   grunt.registerTask('build-lite', ['concat:lite']);
-  grunt.registerTask('build-native', ['version', 'uglify:nativeOnly']);
   grunt.registerTask('release', function() {
     grunt.option('release', true);
     grunt.task.run('minify');

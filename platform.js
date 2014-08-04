@@ -51,31 +51,21 @@ function processFlags(flags) {
         '../URL/url.js',
         'src/lang.js',
         'src/dom.js',
-        'src/template.js',
-        'src/inspector.js',
-        'src/unresolved.js',
-        'src/module.js',
-        'src/microtask.js',
-        'src/url.js',
-
         '../HTMLImports/html-imports.js',
         '../CustomElements/custom-elements.js',
         'src/patches-custom-elements.js',
-        'src/loader.js',
-        'src/styleloader.js',
 
-        // TODO(sjmiles): polymer-expressions.js does not load dependencies, but
-        // the build.json does
-        '../observe-js/src/observe.js',
-        '../NodeBind/src/NodeBind.js',
-        '../TemplateBinding/src/TemplateBinding.js',
-        'src/patches-mdv.js'
+        // these scripts are loaded in platform.js due to polyfill timing issues
+        'src/unresolved.js',
+        'src/module.js'
       ]
     );
 
   }
 
 }
+
+//CustomElements = {useNative: true};
 
 // export
 
