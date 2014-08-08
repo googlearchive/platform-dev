@@ -25,21 +25,4 @@
     }
   });
 
-  Platform.templateContent = function(inTemplate) {
-    // if MDV exists, it may need to boostrap this template to reveal content
-    if (window.HTMLTemplateElement && HTMLTemplateElement.bootstrap) {
-      HTMLTemplateElement.bootstrap(inTemplate);
-    }
-    // fallback when there is no Shadow DOM polyfill, no MDV polyfill, and no
-    // native template support
-    if (!inTemplate.content && !inTemplate._content) {
-      var frag = document.createDocumentFragment();
-      while (inTemplate.firstChild) {
-        frag.appendChild(inTemplate.firstChild);
-      }
-      inTemplate._content = frag;
-    }
-    return inTemplate.content || inTemplate._content;
-  };
-
 })(window.Platform);
