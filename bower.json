@@ -27,8 +27,12 @@
     "bower_components",
     "test",
     "tests",
-    "build*.*",
+    "build",
+    "build.*",
     "conf",
-    "banner.txt"
+    "banner.txt",
+    "gruntfile.js",
+    "src",
+    "platform-dev.js"
   ]
 }
