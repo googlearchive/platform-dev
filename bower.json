@@ -11,7 +11,7 @@
     "web",
     "components"
   ],
-  "dependencies": {
+  "devDependencies": {
     "CustomElements": "Polymer/CustomElements#master",
     "HTMLImports": "Polymer/HTMLImports#master",
     "ShadowDOM": "Polymer/ShadowDOM#master",
@@ -26,6 +26,9 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "build*.*",
+    "conf",
+    "banner.txt"
   ]
 }
