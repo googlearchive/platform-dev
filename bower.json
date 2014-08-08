@@ -33,6 +33,7 @@
     "banner.txt",
     "gruntfile.js",
     "src",
-    "platform-dev.js"
+    "platform-dev.js",
+    "package.json"
   ]
 }
