@@ -28,7 +28,7 @@
     "test",
     "tests",
     "build",
-    "build.*",
+    "build*.*",
     "conf",
     "banner.txt",
     "gruntfile.js",
