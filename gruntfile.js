@@ -78,22 +78,6 @@ module.exports = function(grunt) {
         }
       }
     },
-    yuidoc: {
-      compile: {
-        name: '<%= pkg.name %>',
-        description: '<%= pkg.description %>',
-        version: '<%= pkg.version %>',
-        url: '<%= pkg.homepage %>',
-        options: {
-          exclude: 'third_party',
-          paths: '.',
-          outdir: 'docs',
-          linkNatives: 'true',
-          tabtospace: 2,
-          themedir: '../tools/doc/themes/bootstrap'
-        }
-      }
-    },
     pkg: grunt.file.readJSON('package.json')
   });
 
@@ -101,7 +85,6 @@ module.exports = function(grunt) {
   // plugins
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-yuidoc');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-concat-sourcemap');
   grunt.loadNpmTasks('grunt-audit');
@@ -119,7 +102,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('minify', ['concat_sourcemap', 'version', 'uglify:Platform', 'sourcemap_copy:build/platform.concat.js.map:build/platform.js.map']);
   grunt.registerTask('default', ['minify']);
-  grunt.registerTask('docs', ['yuidoc']);
   grunt.registerTask('test', ['override-chrome-launcher', 'karma:platform']);
   grunt.registerTask('test-build', ['minify', 'stash', 'test', 'restore']);
   grunt.registerTask('test-build-cr', ['minify', 'stash', 'karma:buildbot', 'restore']);
