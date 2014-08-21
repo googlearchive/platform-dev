@@ -57,17 +57,21 @@
   var elementDeclarations = [];
 
   var polymerStub = function(name, dictionary) {
+    Array.prototype.push.call(arguments, document._currentScript);
     elementDeclarations.push(arguments);
-  }
+  };
   window.Polymer = polymerStub;
 
   // deliver queued delcarations
-  scope.deliverDeclarations = function() {
-    scope.deliverDeclarations = function() {
+  scope.consumeDeclarations = function(callback) {
+    scope.consumeDeclarations = function() {
      throw 'Possible attempt to load Polymer twice';
     };
-    return elementDeclarations;
-  }
+    if (callback) {
+      callback(elementDeclarations);
+    }
+    elementDeclarations = null;
+  };
 
   // Once DOMContent has loaded, any main document scripts that depend on
   // Polymer() should have run. Calling Polymer() now is an error until
