@@ -408,25 +408,31 @@ var ShadowCSS = {
           cssText += this.scopeRules(rule.cssRules, scopeSelector);
           cssText += '\n}\n\n';
         } else {
-          // TODO(sjmiles): KEYFRAMES_RULE in IE11 throws when we query cssText
-          // 'cssText' in rule returns true, but rule.cssText throws anyway
-          // We can test the rule type, e.g.
-          //   else if (rule.type !== CSSRule.KEYFRAMES_RULE && rule.cssText) {
-          // but this will prevent cssText propagation in other browsers which
-          // support it.
-          // KEYFRAMES_RULE has a CSSRuleSet, so the text can probably be reconstructed
-          // from that collection; this would be a proper fix.
-          // For now, I'm trapping the exception so IE11 is unblocked in other areas.
+          // KEYFRAMES_RULE in IE throws when we query cssText
+          // when it contains a -webkit- property.
+          // if this happens, we fallback to constructing the rule
+          // from the CSSRuleSet
+          // https://connect.microsoft.com/IE/feedbackdetail/view/955703/accessing-csstext-of-a-keyframe-rule-that-contains-a-webkit-property-via-cssom-generates-exception
           try {
             if (rule.cssText) {
               cssText += rule.cssText + '\n\n';
             }
           } catch(x) {
-            // squelch
+            if (rule.type === CSSRule.KEYFRAMES_RULE && rule.cssRules) {
+              cssText += this.ieSafeCssTextFromKeyFrameRule(rule);
+            }
           }
         }
       }, this);
     }
+    return cssText;
+  },
+  ieSafeCssTextFromKeyFrameRule: function(rule) {
+    var cssText = '@keyframes ' + rule.name + ' {';
+    Array.prototype.forEach.call(rule.cssRules, function(rule) {
+      cssText += ' ' + rule.keyText + ' {' + rule.style.cssText + '}';
+    });
+    cssText += ' }';
     return cssText;
   },
   scopeSelector: function(selector, scopeSelector, strict) {

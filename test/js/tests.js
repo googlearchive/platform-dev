@@ -39,6 +39,7 @@ htmlSuite('styling', function() {
   htmlTest('html/styling/before-content.html?shadow');
   htmlTest('html/styling/before-content.html');
   htmlTest('html/styling/style-import.html');
+  htmlTest('html/styling/css-animation.html');
 });
 
 htmlSuite('Library Cooperation', function() {
