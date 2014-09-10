@@ -8,6 +8,15 @@
  */
 module.exports = function(grunt) {
   var readManifest = require('../tools/loader/readManifest.js');
+  function reposInModules(modules) {
+    var repos = {};
+    modules.forEach(function (m) {
+      if (m.length > 2 && m.substring(0, 3) == '../') {
+        repos[m.substring(0, m.indexOf('/', 3))] = 1;
+      }
+    });
+    return Object.keys(repos);
+  }
 
   grunt.initConfig({
     karma: {
@@ -66,12 +75,7 @@ module.exports = function(grunt) {
     audit: {
       platform: {
         options: {
-          repos: [
-            '../CustomElements',
-            '../HTMLImports',
-            '../ShadowDOM',
-            '../platform-dev'
-          ]
+          repos: reposInModules(readManifest('build.json'))
         },
         files: {
           'build/build.log': 'build/platform.js'
