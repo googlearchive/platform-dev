@@ -75,17 +75,23 @@
     elementDeclarations = null;
   };
 
-  // Once DOMContent has loaded, any main document scripts that depend on
-  // Polymer() should have run. Calling Polymer() now is an error until
-  // polymer is imported.
-  window.addEventListener('DOMContentLoaded', function() {
+  function installPolymerWarning() {
     if (window.Polymer === polymerStub) {
       window.Polymer = function() {
-        console.error('You tried to use polymer without loading it first. To ' +
+        throw new Error('You tried to use polymer without loading it first. To ' +
           'load polymer, <link rel="import" href="' + 
           'components/polymer/polymer.html">');
       };
     }
-  });
+  }
+
+  // Once DOMContent has loaded, any main document scripts that depend on
+  // Polymer() should have run. Calling Polymer() now is an error until
+  // polymer is imported.
+  if (HTMLImports.useNative) {
+    installPolymerWarning();
+  } else {
+    addEventListener('DOMContentLoaded', installPolymerWarning);
+  }
 
 })(window.Platform);

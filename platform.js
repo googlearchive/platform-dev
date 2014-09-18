@@ -50,11 +50,10 @@ function processFlags(flags) {
       [
         '../URL/url.js',
         'src/lang.js',
-        'src/dom.js',
         '../HTMLImports/html-imports.js',
         '../CustomElements/custom-elements.js',
         'src/patches-custom-elements.js',
-
+        'src/dom.js',
         // these scripts are loaded in platform.js due to polyfill timing issues
         'src/unresolved.js',
         'src/module.js'

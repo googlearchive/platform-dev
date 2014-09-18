@@ -10,10 +10,10 @@
   "build/end-if.js",
   "../URL/url.js",
   "src/lang.js",
-  "src/dom.js",
   "../HTMLImports/build.json",
   "../CustomElements/build.json",
   "src/patches-custom-elements.js",
+  "src/dom.js",
   "src/unresolved.js",
   "src/module.js"
 ]
