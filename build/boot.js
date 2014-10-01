@@ -46,7 +46,7 @@ window.logFlags = window.logFlags || {};
   }
 
   if (flags.shadow && document.querySelectorAll('script').length > 1) {
-    console.warn('platform.js is not the first script on the page. ' +
+    console.log('Warning: platform.js is not the first script on the page. ' +
         'See http://www.polymer-project.org/docs/start/platform.html#setup ' +
         'for details.');
   }
