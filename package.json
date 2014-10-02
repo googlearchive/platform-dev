@@ -1,6 +1,6 @@
 {
   "name": "Platform",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "devDependencies": {
     "chai": "^1.9.1",
     "grunt-audit": ">=0.0.3",
