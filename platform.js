@@ -29,32 +29,25 @@ function processFlags(flags) {
       flags.shadow = flags.shadow || !HTMLElement.prototype.createShadowRoot;
     }
 
-    var ShadowDOMNative = [
-      'src/patches-shadowdom-native.js'
-    ];
-
     var ShadowDOMPolyfill = [
       '../ShadowDOM/shadowdom.js',
-      'src/patches-shadowdom-polyfill.js',
       'src/ShadowCSS.js'
     ];
 
     // select ShadowDOM impl
-
-    var ShadowDOM = flags.shadow ? ShadowDOMPolyfill : ShadowDOMNative;
+    var ShadowDOM = flags.shadow ? ShadowDOMPolyfill : [];
 
     // construct full dependency list
-
     this.modules = [].concat(
       ShadowDOM,
       [
+        // TODO(sorvell): does this build require url?
         '../URL/url.js',
         'src/lang.js',
-        '../HTMLImports/html-imports.js',
-        '../CustomElements/custom-elements.js',
-        'src/patches-custom-elements.js',
-        'src/dom.js',
+        '../HTMLImports/HTMLImports.js',
+        '../CustomElements/CustomElements.js',
         // these scripts are loaded in platform.js due to polyfill timing issues
+        'src/dom.js',
         'src/unresolved.js',
         'src/module.js'
       ]
