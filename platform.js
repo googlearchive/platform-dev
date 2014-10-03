@@ -29,13 +29,18 @@ function processFlags(flags) {
       flags.shadow = flags.shadow || !HTMLElement.prototype.createShadowRoot;
     }
 
+    var ShadowDOMNative = [
+      'src/shadowdom.js'
+    ];
+
     var ShadowDOMPolyfill = [
       '../ShadowDOM/shadowdom.js',
+      'src/shadowdom.js',
       'src/ShadowCSS.js'
     ];
 
     // select ShadowDOM impl
-    var ShadowDOM = flags.shadow ? ShadowDOMPolyfill : [];
+    var ShadowDOM = flags.shadow ? ShadowDOMPolyfill : ShadowDOMNative;
 
     // construct full dependency list
     this.modules = [].concat(

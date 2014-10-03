@@ -23,7 +23,7 @@ var xhr = {
     xhr.callbacks[url] = {
       next: next,
       nextContext: nextContext
-    }
+    };
     parent.postMessage({
       url: url,
       bust: scope.flags.debug || scope.flags.bust
